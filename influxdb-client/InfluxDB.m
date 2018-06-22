@@ -28,6 +28,11 @@ classdef InfluxDB < handle
             databases = [res.results.series.values{:}];
         end
         
+        % Change the current database
+        function obj = use(obj, database)
+            obj.Database = database;
+        end
+        
         % Execute a raw query
         function result = rawQuery(obj, query)
             url = [obj.Host '/query'];

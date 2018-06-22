@@ -40,6 +40,9 @@ influxdb = InfluxDB(HOST, USER, PASS, DATABASE);
 
 % Show the databases in the server
 dbs = influxdb.databases()
+
+% Change the current database
+influxdb.use('production');
 ```
 
 
