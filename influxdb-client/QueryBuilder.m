@@ -68,18 +68,7 @@ classdef QueryBuilder < handle
         
         % Add multiple tags equals
         function obj = tags(obj, varargin)
-            if nargin == 2
-                tagstruct = varargin{1};
-            else
-                aux = cellfun(@(x) iif(iscell(x), {x}, x), ...
-                    varargin, 'UniformOutput', false);
-                tagstruct = struct(aux{:});
-            end
-            for tag = fieldnames(tagstruct)'
-                key = tag{:};
-                value = tagstruct.(key);
-                obj.tag(key, value);
-            end
+            forEachPair(varargin, @(k, v) obj.tag(k, v));
         end
         
         % Add tag-like clause
@@ -96,18 +85,7 @@ classdef QueryBuilder < handle
         
         % Add multiple tags-like
         function obj = tagsLike(obj, varargin)
-            if nargin == 2
-                tagstruct = varargin{1};
-            else
-                aux = cellfun(@(x) iif(iscell(x), {x}, x), ...
-                    varargin, 'UniformOutput', false);
-                tagstruct = struct(aux{:});
-            end
-            for tag = fieldnames(tagstruct)'
-                key = tag{:};
-                value = tagstruct.(key);
-                obj.tagLike(key, value);
-            end
+            forEachPair(varargin, @(k, v) obj.tagLike(k, v));
         end
         
         % Configure the where clause

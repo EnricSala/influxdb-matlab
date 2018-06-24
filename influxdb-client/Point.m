@@ -20,16 +20,7 @@ classdef Point < handle
         
         % Add multiple tags at once
         function obj = tags(obj, varargin)
-            if nargin == 1
-                tagstruct = varargin{1};
-            else
-                tagstruct = struct(varargin{:});
-            end
-            for tag = fieldnames(tagstruct)'
-                key = tag{:};
-                value = tagstruct.(key);
-                obj.tag(key, value);
-            end
+            forEachPair(varargin, @(k, v) obj.tag(k, v));
         end
         
         % Add a field value
@@ -45,16 +36,7 @@ classdef Point < handle
         
         % Add multiple fields at once
         function obj = fields(obj, varargin)
-            if nargin == 1
-                fieldstruct = varargin{1};
-            else
-                fieldstruct = struct(varargin{:});
-            end
-            for field = fieldnames(fieldstruct)'
-                key = field{:};
-                value = fieldstruct.(key);
-                obj.field(key, value);
-            end
+            forEachPair(varargin, @(k, v) obj.field(k, v));
         end
         
         % Set the time
