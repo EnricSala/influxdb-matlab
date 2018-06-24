@@ -66,7 +66,7 @@ classdef QueryBuilder < handle
             obj.Tags{end + 1} = clause;
         end
         
-        % Add multiple tags at once
+        % Add multiple tags equals
         function obj = tags(obj, varargin)
             if nargin == 2
                 tagstruct = varargin{1};
@@ -79,6 +79,34 @@ classdef QueryBuilder < handle
                 key = tag{:};
                 value = tagstruct.(key);
                 obj.tag(key, value);
+            end
+        end
+        
+        % Add tag-like clause
+        function obj = tagLike(obj, key, values)
+            fmt = @(x) ['"' key '"=~/' x '/'];
+            if iscell(values)
+                terms = cellfun(fmt, values, 'UniformOutput', false);
+                clause = ['(' strjoin(terms, ' OR ') ')'];
+            else
+                clause = fmt(values);
+            end
+            obj.Tags{end + 1} = clause;
+        end
+        
+        % Add multiple tags-like
+        function obj = tagsLike(obj, varargin)
+            if nargin == 2
+                tagstruct = varargin{1};
+            else
+                aux = cellfun(@(x) iif(iscell(x), {x}, x), ...
+                    varargin, 'UniformOutput', false);
+                tagstruct = struct(aux{:});
+            end
+            for tag = fieldnames(tagstruct)'
+                key = tag{:};
+                value = tagstruct.(key);
+                obj.tagLike(key, value);
             end
         end
         

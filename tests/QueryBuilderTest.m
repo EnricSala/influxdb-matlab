@@ -99,6 +99,38 @@ classdef QueryBuilderTest < matlab.unittest.TestCase
             exp = 'SELECT * FROM weather WHERE "city"=''bcn'' AND ("station"=''a1'' OR "station"=''b2'')';
             test.verifyEqual(q.build(), exp);
         end
+        
+        %% Tags-like tests
+        function single_tag_like(test)
+            q = QueryBuilder('weather').tagsLike('city', 'barcelo');
+            exp = 'SELECT * FROM weather WHERE "city"=~/barcelo/';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function single_tag_like_multiple_values(test)
+            q = QueryBuilder('weather').tagsLike('city', {'^barcelo', 'enhaguen$'});
+            exp = 'SELECT * FROM weather WHERE ("city"=~/^barcelo/ OR "city"=~/enhaguen$/)';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function multiple_tags_like(test)
+            q = QueryBuilder('weather').tagsLike('city', 'stock|amste', 'station', {'a1', 'b2'});
+            exp = 'SELECT * FROM weather WHERE "city"=~/stock|amste/ AND ("station"=~/a1/ OR "station"=~/b2/)';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function multiple_tags_like_from_struct(test)
+            tags = struct('city', '[xyz]', 'station', {{'a1', 'b2'}});
+            q = QueryBuilder('weather').tagsLike(tags);
+            exp = 'SELECT * FROM weather WHERE "city"=~/[xyz]/ AND ("station"=~/a1/ OR "station"=~/b2/)';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function mix_tags_equal_with_tags_like(test)
+            q = QueryBuilder('weather').tags('city', 'barcelona').tagsLike('station', 'a1|b2');
+            exp = 'SELECT * FROM weather WHERE "city"=''barcelona'' AND "station"=~/a1|b2/';
+            test.verifyEqual(q.build(), exp);
+        end
     end
     
 end
