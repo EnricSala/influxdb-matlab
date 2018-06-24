@@ -78,14 +78,18 @@ influxdb.writer() ...
 Querying data
 -------------
 
-The client can execute static queries, but a query builder is provided to help generate queries:
+The client supports reading data from InfluxDB using query strings:
 
 ```matlab
 % Manually written query
-query = 'SELECT temperature FROM weather WHERE temperature > 20 LIMIT 100';
-result = influxdb.runQuery(query);
+str = 'SELECT temperature FROM weather WHERE temperature > 20 LIMIT 100';
+result = influxdb.runQuery(str);
+```
 
-% Use the query builder to generate the query
+Additionally, a query builder is provided to help generate them:
+
+```matlab
+% Dynamically generated query
 result = influxdb.query('weather') ...
     .fields('temperature', 'humidity') ...
     .tags('city', 'barcelona') ...
@@ -97,10 +101,10 @@ result = influxdb.query('weather') ...
     .execute();
 ```
 
-The result is an object that provides additional functionalities:
+The result of a query is an object that provides additional functionalities:
 
 ```matlab
-% Check which series are in a result
+% Check which series are present in a result
 series_names = result.names()
 
 % Extract a specific series
