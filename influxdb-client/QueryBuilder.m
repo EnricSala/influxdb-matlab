@@ -1,15 +1,21 @@
 classdef QueryBuilder < handle
     
     properties(Access = private)
-        Influx, Series, Fields, Tags, Before, After, Where, Limit;
+        InfluxDB, Series, Fields, Tags, Before, After, Where, Limit;
     end
     
     methods
         % Constructor
-        function obj = QueryBuilder(influx, series)
-            obj.Influx = influx;
-            obj.series(series);
-            obj.fields('*');
+        function obj = QueryBuilder(varargin)
+            if nargin > 1
+                obj.series(varargin);
+            elseif nargin > 0
+                obj.series(varargin{1});
+            else
+                obj.Series = {};
+            end
+            obj.InfluxDB = [];
+            obj.fields();
             obj.Tags = {};
             obj.Before = [];
             obj.After = [];
@@ -17,20 +23,39 @@ classdef QueryBuilder < handle
             obj.Limit = [];
         end
         
+        % Set the client instance used for execution
+        function obj = influxdb(obj, influxdb)
+            obj.InfluxDB = influxdb;
+        end
+        
         % Configure which series to query
-        function obj = series(obj, series)
-            assert(~isempty(series), 'must specify at least 1 serie');
-            obj.Series = iif(iscell(series), series, { series });
+        function obj = series(obj, varargin)
+            if nargin > 2
+                series = varargin;
+            elseif nargin > 1
+                series = varargin{1};
+                series = iif(iscell(series), series, {series});
+            else
+                error('series:empty', 'must specify at least 1 serie');
+            end
+            obj.Series = series;
         end
         
-        % Configure returned fields
-        function obj = fields(obj, fields)
-            assert(~isempty(fields), 'must specify at least 1 field');
-            obj.Fields = iif(iscell(fields), fields, { fields });
+        % Configure which fields to query
+        function obj = fields(obj, varargin)
+            if nargin > 2
+                fields = varargin;
+            elseif nargin > 1
+                fields = varargin{1};
+                fields = iif(iscell(fields), fields, {fields});
+            else
+                fields = {'*'};
+            end
+            obj.Fields = fields;
         end
         
-        % Add tag conditions
-        function obj = tagged(obj, key, values)
+        % Add tag equals clause
+        function obj = tag(obj, key, values)
             fmt = @(x) ['"' key '"=''' x ''''];
             if iscell(values)
                 terms = cellfun(fmt, values, 'UniformOutput', false);
@@ -41,7 +66,23 @@ classdef QueryBuilder < handle
             obj.Tags{end + 1} = clause;
         end
         
-        % Configure where clause
+        % Add multiple tags at once
+        function obj = tags(obj, varargin)
+            if nargin == 2
+                tagstruct = varargin{1};
+            else
+                aux = cellfun(@(x) iif(iscell(x), {x}, x), ...
+                    varargin, 'UniformOutput', false);
+                tagstruct = struct(aux{:});
+            end
+            for tag = fieldnames(tagstruct)'
+                key = tag{:};
+                value = tagstruct.(key);
+                obj.tag(key, value);
+            end
+        end
+        
+        % Configure the where clause
         function obj = where(obj, where)
             obj.Where = where;
         end
@@ -121,13 +162,14 @@ classdef QueryBuilder < handle
         % Execute the query and unpack the response
         function [result, query] = execute(obj)
             query = obj.build();
-            result = obj.Influx.rawQuery(query);
+            result = obj.InfluxDB.rawQuery(query);
         end
     end
     
     methods(Access = private)
         % Build base query
         function query = buildBaseQuery(obj)
+            assert(~isempty(obj.Series), 'build:emptySeries', 'series not defined');
             series = strjoin(obj.Series, ',');
             fields = strjoin(obj.Fields, ',');
             query = ['SELECT ' fields ' FROM ' series];

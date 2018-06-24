@@ -43,8 +43,14 @@ classdef InfluxDB < handle
         end
         
         % Execute a configurable query
-        function builder = query(obj, series)
-            builder = QueryBuilder(obj, series);
+        function builder = query(obj, varargin)
+            if nargin > 2
+                builder = QueryBuilder().series(varargin).influxdb(obj);
+            elseif nargin > 1
+                builder = QueryBuilder().series(varargin{1}).influxdb(obj);
+            else
+                builder = QueryBuilder().influxdb(obj);
+            end
         end
         
         % Write raw line protocol
