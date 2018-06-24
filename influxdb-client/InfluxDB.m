@@ -35,7 +35,7 @@ classdef InfluxDB < handle
         end
         
         % Execute a raw query
-        function result = rawQuery(obj, query)
+        function result = runQuery(obj, query)
             url = [obj.Host '/query'];
             opts = weboptions('Username', obj.User, 'Password', obj.Password);
             response = webread(url, 'db', obj.Database, 'epoch', 'ms', 'q', query, opts);
@@ -54,7 +54,7 @@ classdef InfluxDB < handle
         end
         
         % Write raw line protocol
-        function [] = rawWrite(obj, lines)
+        function [] = runWrite(obj, lines)
             url = [obj.Host '/write?db=' obj.Database '&precision=ms'];
             opts = weboptions('Username', obj.User, 'Password', obj.Password);
             webwrite(url, lines, opts);

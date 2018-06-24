@@ -83,7 +83,7 @@ The client can execute static queries, but a query builder is provided to help g
 ```matlab
 % Manually written query
 query = 'SELECT temperature FROM weather WHERE temperature > 20 LIMIT 100';
-result = influxdb.rawQuery(query);
+result = influxdb.runQuery(query);
 
 % Use the query builder to generate the query
 result = influxdb.query('weather') ...

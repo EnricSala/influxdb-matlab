@@ -36,7 +36,7 @@ classdef WriteBuilder < handle
         % Execute the write
         function [] = execute(obj)
             lines = obj.build();
-            obj.Influx.rawWrite(lines);
+            obj.Influx.runWrite(lines);
         end
     end
     

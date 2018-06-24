@@ -168,7 +168,7 @@ classdef QueryBuilder < handle
         % Execute the query and unpack the response
         function [result, query] = execute(obj)
             query = obj.build();
-            result = obj.InfluxDB.rawQuery(query);
+            result = obj.InfluxDB.runQuery(query);
         end
     end
     
