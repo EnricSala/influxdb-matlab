@@ -14,11 +14,12 @@ classdef InfluxDB < handle
         end
         
         % Test connection with a ping
-        function [ok, duration] = ping(obj)
+        function [ok, millis] = ping(obj)
             timer = tic;
             url = [obj.Host '/ping'];
-            [~, ok] = urlread(url);
-            duration = toc(timer) * 1000;
+            [~, status] = urlread(url);
+            millis = toc(timer) * 1000;
+            ok = logical(status);
         end
         
         % Show databases
