@@ -56,8 +56,11 @@ classdef Point < handle
         function line = toLine(obj)
             start = strjoin([{obj.Name}, obj.Tags], ',');
             fields = strjoin(obj.Fields, ',');
-            if isempty(obj.Time), obj.time(datetime); end
-            line = [start, ' ', fields, ' ', obj.Time];
+            if isempty(obj.Time)
+                line = [start, ' ', fields];
+            else
+                line = [start, ' ', fields, ' ', obj.Time];
+            end
         end
     end
     
