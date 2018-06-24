@@ -1,0 +1,45 @@
+# Matlab files
+*.asv
+*.prj
+
+# Log files
+*.log
+log.txt
+
+# Temp folders
+temp/
+temp*/
+
+# Compiled source
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Packages
+*.7z
+*.dmg
+*.gz
+*.iso
+*.rar
+*.tar
+*.zip
+
+# Databases
+*.sql
+*.sqlite
+
+# OS generated files
+ehthumbs.db
+Thumbs.db
+
+# Folder config
+Desktop.ini
+
+# Windows shortcuts
+*.lnk
+
+# Virtual machine crash logs
+hs_err_pid*
