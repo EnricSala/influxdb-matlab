@@ -54,6 +54,8 @@ classdef Point < handle
         
         % Format to Line Protocol
         function line = toLine(obj)
+            assert(~isempty(obj.Name), 'toLine:emptyName', 'series name cannot be empty');
+            assert(~isempty(obj.Fields), 'toLine:emptyFields', 'must define at least one field');
             start = strjoin([{obj.Name}, obj.Tags], ',');
             fields = strjoin(obj.Fields, ',');
             if isempty(obj.Time)
