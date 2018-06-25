@@ -26,7 +26,7 @@ classdef Point < handle
         % Add a field value
         function obj = field(obj, key, value)
             if isnumeric(value)
-                obj.Fields{end + 1} = [key '=' num2str(value)];
+                obj.Fields{end + 1} = sprintf('%s=%.8g', key, value);
             elseif ischar(value)
                 obj.Fields{end + 1} = [key '="' value '"'];
             else
@@ -42,11 +42,11 @@ classdef Point < handle
         % Set the time
         function obj = time(obj, time)
             if isdatetime(time)
-                obj.Time = num2str(int64(1000 * posixtime(time)));
+                obj.Time = sprintf('%i', int64(1000 * posixtime(time)));
             elseif isfloat(time)
                 warning('timezone not specified, assuming local');
                 dtime = datetime(time, 'ConvertFrom', 'datenum', 'TimeZone', 'local');
-                obj.Time = num2str(int64(1000 * posixtime(dtime)));
+                obj.Time = sprintf('%i', int64(1000 * posixtime(dtime)));
             else
                 error('unsupported time type');
             end
