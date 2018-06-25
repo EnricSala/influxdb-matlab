@@ -13,7 +13,7 @@ classdef InfluxDB < handle
             obj.Database = database;
         end
         
-        % Test connection with a ping
+        % Test the connection with a ping
         function [ok, millis] = ping(obj)
             timer = tic;
             url = [obj.Host '/ping'];
@@ -35,7 +35,7 @@ classdef InfluxDB < handle
             obj.Database = database;
         end
         
-        % Execute a raw query
+        % Execute a query string
         function result = runQuery(obj, query)
             url = [obj.Host '/query'];
             opts = weboptions('Username', obj.User, 'Password', obj.Password);
@@ -43,7 +43,7 @@ classdef InfluxDB < handle
             result = QueryResult.from(response);
         end
         
-        % Execute a configurable query
+        % Obtain a query builder
         function builder = query(obj, varargin)
             if nargin > 2
                 builder = QueryBuilder().series(varargin).influxdb(obj);
@@ -54,14 +54,14 @@ classdef InfluxDB < handle
             end
         end
         
-        % Write raw line protocol
+        % Execute a write of a line protocol string
         function [] = runWrite(obj, lines)
             url = [obj.Host '/write?db=' obj.Database '&precision=ms'];
             opts = weboptions('Username', obj.User, 'Password', obj.Password);
             webwrite(url, lines, opts);
         end
         
-        % Write using point builder
+        % Obtain a write builder
         function builder = writer(obj)
             builder = WriteBuilder(obj);
         end
