@@ -17,9 +17,21 @@ classdef PointTest < matlab.unittest.TestCase
             test.verifyEqual(p.toLine(), exp);
         end
         
+        function supports_fields_with_integer_values(test)
+            p = Point('weather').fields('rain_drops', int64(1234567890));
+            exp = 'weather rain_drops=1234567890i';
+            test.verifyEqual(p.toLine(), exp);
+        end
+        
         function supports_fields_with_string_values(test)
             p = Point('weather').fields('wind_direction', 'north-west');
             exp = 'weather wind_direction="north-west"';
+            test.verifyEqual(p.toLine(), exp);
+        end
+        
+        function supports_fields_with_logical_values(test)
+            p = Point('weather').fields('raining', true);
+            exp = 'weather raining=true';
             test.verifyEqual(p.toLine(), exp);
         end
         

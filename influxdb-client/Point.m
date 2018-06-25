@@ -25,10 +25,14 @@ classdef Point < handle
         
         % Add a field value
         function obj = field(obj, key, value)
-            if isnumeric(value)
+            if isfloat(value)
                 obj.Fields{end + 1} = sprintf('%s=%.8g', key, value);
+            elseif isinteger(value)
+                obj.Fields{end + 1} = sprintf('%s=%ii', key, value);
             elseif ischar(value)
                 obj.Fields{end + 1} = [key '="' value '"'];
+            elseif islogical(value)
+                obj.Fields{end + 1} = [key '=' iif(value, 'true', 'false')];
             else
                 error('unsupported value type');
             end
