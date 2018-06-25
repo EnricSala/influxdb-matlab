@@ -25,8 +25,9 @@ classdef InfluxDB < handle
         % Show databases
         function databases = databases(obj)
             url = [obj.Host '/query'];
-            res = webread(url, 'q', 'SHOW DATABASES');
-            databases = [res.results.series.values{:}];
+            opts = weboptions('Username', obj.User, 'Password', obj.Password);
+            response = webread(url, 'q', 'SHOW DATABASES', opts);
+            databases = [response.results.series.values{:}];
         end
         
         % Change the current database
