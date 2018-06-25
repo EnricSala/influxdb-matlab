@@ -17,6 +17,12 @@ classdef PointTest < matlab.unittest.TestCase
             test.verifyEqual(p.toLine(), exp);
         end
         
+        function supports_fields_with_string_values(test)
+            p = Point('weather').fields('wind_direction', 'north-west');
+            exp = 'weather wind_direction="north-west"';
+            test.verifyEqual(p.toLine(), exp);
+        end
+        
         function multiple_fields(test)
             p = Point('weather') ...
                 .fields('temperature', 24.3, 'humidity', 60.7);
