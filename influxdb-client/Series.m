@@ -58,13 +58,17 @@ classdef Series < handle
         % Format to Line Protocol
         function lines = toLine(obj)
             time_length = length(obj.Time);
-            fields_length = unique(cellfun(@(x) length(x.value), obj.Fields));
-            assert(length(fields_length) == 1, ...
+            field_lengths = unique(cellfun(@(x) length(x.value), obj.Fields));
+            assert(~isempty(obj.Time), ...
+                'toLine:emptyTime', 'the time vector cannot be empty');
+            assert(~isempty(field_lengths), ...
+                'toLine:emptyFields', 'must define at least one field');
+            assert(length(field_lengths) == 1, ...
                 'toLine:sizeMismatch', 'all fields must have the same length');
-            assert(time_length == fields_length || time_length == 0, ...
+            assert(time_length == field_lengths || time_length == 0, ...
                 'toLine:sizeMismatch', 'time and fields must have the same length');
             builder = java.lang.StringBuilder();
-            for i = 1:fields_length
+            for i = 1:field_lengths
                 point = Point(obj.Name);
                 for t = 1:length(obj.Tags)
                     tag = obj.Tags{t};
