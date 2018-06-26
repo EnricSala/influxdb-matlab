@@ -63,7 +63,7 @@ classdef InfluxDB < handle
         
         % Obtain a write builder
         function builder = writer(obj)
-            builder = WriteBuilder(obj);
+            builder = WriteBuilder().influxdb(obj);
         end
     end
     

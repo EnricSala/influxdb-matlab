@@ -1,14 +1,19 @@
 classdef WriteBuilder < handle
     
     properties(Access = private)
-        Influx, Points;
+        InfluxDB, Points;
     end
     
     methods
         % Constructor
-        function obj = WriteBuilder(influx)
-            obj.Influx = influx;
+        function obj = WriteBuilder()
+            obj.InfluxDB = [];
             obj.Points = {};
+        end
+        
+        % Set the client instance used for execution
+        function obj = influxdb(obj, influxdb)
+            obj.InfluxDB = influxdb;
         end
         
         % Append points
@@ -36,7 +41,7 @@ classdef WriteBuilder < handle
         % Execute the write
         function [] = execute(obj)
             lines = obj.build();
-            obj.Influx.runWrite(lines);
+            obj.InfluxDB.runWrite(lines);
         end
     end
     
