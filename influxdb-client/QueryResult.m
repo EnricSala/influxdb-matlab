@@ -25,9 +25,10 @@ classdef QueryResult < handle
             idx = find(match, 1, 'first');
         end
         
-        % Test if serie is present
-        function present = isPresent(obj, name)
-            present = ~isempty(obj.indexOf(name));
+        % Check if the result contains these series
+        function present = contains(obj, varargin)
+            check = @(x) ~isempty(obj.indexOf(x));
+            present = arrayfun(check, varargin);
         end
         
         % Get a serie by name

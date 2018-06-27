@@ -38,9 +38,10 @@ classdef SeriesResult < handle
             idx = find(match, 1, 'first');
         end
         
-        % Test if field is present
-        function present = isPresent(obj, field)
-            present = ~isempty(obj.indexOf(field));
+        % Check if the result contains these fields
+        function present = contains(obj, varargin)
+            check = @(x) ~isempty(obj.indexOf(x));
+            present = arrayfun(check, varargin);
         end
         
         % Get the value of a field
