@@ -1,6 +1,6 @@
 classdef Series < handle
     
-    properties
+    properties(Access = private)
         Name, Tags, Fields, Time;
     end
     

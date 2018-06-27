@@ -1,6 +1,6 @@
 classdef QueryResult < handle
     
-    properties
+    properties(Access = private)
         Series;
     end
     
@@ -12,7 +12,7 @@ classdef QueryResult < handle
         
         % List names of the series
         function names = names(obj)
-            names = {obj.Series.Name};
+            names = {obj.Series.name()};
         end
         
         % Find serie position

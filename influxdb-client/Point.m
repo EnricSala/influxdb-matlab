@@ -1,6 +1,6 @@
 classdef Point < handle
     
-    properties
+    properties(Access = private)
         Name, Tags, Fields, Time;
     end
     

@@ -1,6 +1,6 @@
 classdef SeriesResult < handle
     
-    properties
+    properties(Access = private)
         Name, Time, Values;
     end
     
@@ -10,6 +10,11 @@ classdef SeriesResult < handle
             obj.Name = name;
             obj.Time = time;
             obj.Values = values;
+        end
+        
+        % Get the name of the series
+        function name = name(obj)
+            name = obj.Name;
         end
         
         % Get the time, with an optional timezone
