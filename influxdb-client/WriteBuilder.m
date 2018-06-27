@@ -40,6 +40,8 @@ classdef WriteBuilder < handle
         
         % Execute the write
         function [] = execute(obj)
+            assert(~isempty(obj.InfluxDB), 'execute:clientNotSet', ...
+                'the influxdb client is not set for this builder');
             lines = obj.build();
             obj.InfluxDB.runWrite(lines);
         end

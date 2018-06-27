@@ -167,6 +167,8 @@ classdef QueryBuilder < handle
         
         % Execute the query and unpack the response
         function [result, query] = execute(obj)
+            assert(~isempty(obj.InfluxDB), 'execute:clientNotSet', ...
+                'the influxdb client is not set for this builder');
             query = obj.build();
             result = obj.InfluxDB.runQuery(query);
         end
