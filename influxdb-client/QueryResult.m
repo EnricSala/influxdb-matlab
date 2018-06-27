@@ -50,6 +50,9 @@ classdef QueryResult < handle
     methods(Static, Access = private)
         % Wrap series results in a query result
         function obj = wrap(result)
+            if isfield(result, 'error')
+                error('query:error', 'query error: %s', result.error);
+            end
             assert(isfield(result, 'series'), 'the result contains no series');
             series = arrayfun(@(x) SeriesResult.from(x), result.series);
             obj = QueryResult(series);
