@@ -12,7 +12,11 @@ classdef QueryResult < handle
         
         % List names of the series
         function names = names(obj)
-            names = {obj.Series.name()};
+            N = length(obj.Series);
+            names = cell(1, N);
+            for i = 1:N
+                names{i} = obj.Series(i).name();
+            end
         end
         
         % Find serie position
