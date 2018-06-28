@@ -1,20 +1,26 @@
 classdef SeriesResult < handle
     
     properties(Access = private)
-        Name, Time, Values;
+        Name, Time, Tags, Values;
     end
     
     methods
         % Constructor
-        function obj = SeriesResult(name, time, values)
+        function obj = SeriesResult(name, time, tags, values)
             obj.Name = name;
             obj.Time = time;
+            obj.Tags = tags;
             obj.Values = values;
         end
         
         % Get the name of the series
         function name = name(obj)
             name = obj.Name;
+        end
+        
+        % Get the tags of the series
+        function name = tags(obj)
+            name = obj.Tags;
         end
         
         % Get the time, with an optional timezone
@@ -79,8 +85,15 @@ classdef SeriesResult < handle
                 return
             end
             
+            % Extract the tags if present
+            if isfield(serie, 'tags')
+                tags = serie.tags;
+            else
+                tags = struct();
+            end
+            
             % Prepare the values in a cell format
-            N = length(values);
+            N = size(values, 1);
             fields = columns(2:end);
             if iscell(values)
                 % Implies there are non-numeric values
@@ -131,7 +144,7 @@ classdef SeriesResult < handle
             end
             
             % Create the series result
-            obj = SeriesResult(name, time, props);
+            obj = SeriesResult(name, time, tags, props);
         end
     end
     
