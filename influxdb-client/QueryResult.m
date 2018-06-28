@@ -22,7 +22,7 @@ classdef QueryResult < handle
         % Find serie position
         function idx = indexOf(obj, name)
             match = strcmp(obj.names(), name);
-            idx = find(match, 1, 'first');
+            idx = find(match);
         end
         
         % Check if the result contains these series
