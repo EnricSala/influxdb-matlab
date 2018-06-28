@@ -75,7 +75,13 @@ classdef SeriesResult < handle
                 celled = cell(N, C);
                 for i = 1:N
                     row = values{i};
-                    celled(i, :) = row;
+                    if iscell(row)
+                        % The row contains non-numeric values
+                        celled(i, :) = row;
+                    else
+                        % The row is all numeric, or NaN
+                        celled(i, :) = num2cell(row);
+                    end
                 end
                 time = SeriesResult.toDatetime(cell2mat(celled(:, 1)));
             else
