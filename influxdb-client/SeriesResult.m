@@ -32,12 +32,6 @@ classdef SeriesResult < handle
             fields = {obj.Values.field};
         end
         
-        % Find field position
-        function idx = indexOf(obj, field)
-            match = strcmp(obj.fields(), field);
-            idx = find(match, 1, 'first');
-        end
-        
         % Check if the result contains these fields
         function present = contains(obj, varargin)
             check = @(x) ~isempty(obj.indexOf(x));
@@ -60,6 +54,14 @@ classdef SeriesResult < handle
             end
             vars = {obj.Values.value};
             ttable = timetable(time, vars{:}, 'VariableNames', obj.fields());
+        end
+    end
+    
+    methods(Access = private)
+        % Find the position of a field
+        function idx = indexOf(obj, field)
+            match = strcmp(obj.fields(), field);
+            idx = find(match, 1, 'first');
         end
     end
     

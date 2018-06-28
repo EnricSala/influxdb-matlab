@@ -19,12 +19,6 @@ classdef QueryResult < handle
             end
         end
         
-        % Find serie position
-        function idx = indexOf(obj, name)
-            match = strcmp(obj.names(), name);
-            idx = find(match);
-        end
-        
         % Check if the result contains these series
         function present = contains(obj, varargin)
             check = @(x) ~isempty(obj.indexOf(x));
@@ -36,6 +30,14 @@ classdef QueryResult < handle
             idx = obj.indexOf(name);
             assert(~isempty(idx), ['series "' name '" is not present']);
             series = obj.Series(idx);
+        end
+    end
+    
+    methods(Access = private)
+        % Find the position of a series
+        function idx = indexOf(obj, name)
+            match = strcmp(obj.names(), name);
+            idx = find(match);
         end
     end
     
