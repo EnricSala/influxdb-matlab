@@ -67,10 +67,10 @@ classdef SeriesResult < handle
             end
             
             % Prepare the values in a cell format
+            N = length(values);
             fields = columns(2:end);
             if iscell(values)
                 % Implies there are non-numeric values
-                N = length(values);
                 C = length(values{1});
                 celled = cell(N, C);
                 for i = 1:N
@@ -96,9 +96,13 @@ classdef SeriesResult < handle
                 field = fields{i - 1};
                 value = celled(:, i);
                 if all(cellfun(@(x) isnumeric(x), value))
-                    % If all values are numeric convert to an array
+                    % Convert to an array ensuring no empty values
+                    for j = 1:N
+                        if isempty(value{j})
+                            value{j} = NaN;
+                        end
+                    end
                     value = cell2mat(value);
-                    if isempty(value), value = NaN(N, 1); end
                 else
                     % Prevent an error creating the struct below
                     value = {value};
