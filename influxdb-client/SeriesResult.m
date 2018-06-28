@@ -94,22 +94,30 @@ classdef SeriesResult < handle
             % Format the values as name/value structs
             for i = C:-1:2
                 field = fields{i - 1};
-                value = celled(:, i);
-                if all(cellfun(@(x) isnumeric(x), value))
-                    % Convert to an array ensuring no empty values
+                column = celled(:, i);
+                if all(cellfun(@(x) isnumeric(x), column))
+                    % Convert to a numeric array
                     for j = 1:N
-                        if isempty(value{j})
-                            value{j} = NaN;
+                        if isempty(column{j})
+                            column{j} = NaN;
                         end
                     end
-                    value = cell2mat(value);
+                    value = cell2mat(column);
+                elseif any(cellfun(@(x) islogical(x), column))
+                    % Convert to a logical array
+                    value = zeros(N, 1);
+                    for j = 1:N
+                        item = column{j};
+                        value(j) = iif(islogical(item), item, NaN);
+                    end
                 else
-                    % Prevent an error creating the struct below
-                    value = {value};
+                    % Convert to a nested char cell
+                    value = {column};
                 end
                 props(i - 1) = struct('field', field, 'value', value);
             end
             
+            % Create the series result
             obj = SeriesResult(name, time, props);
         end
     end
