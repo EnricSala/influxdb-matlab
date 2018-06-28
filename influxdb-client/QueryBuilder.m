@@ -1,7 +1,16 @@
 classdef QueryBuilder < handle
     
     properties(Access = private)
-        InfluxDB, Series, Fields, Tags, Before, After, Where, Limit;
+        InfluxDB = []
+        Series = {}
+        Fields = {'*'}
+        Tags = {}
+        Before = []
+        After = []
+        Where = []
+        GroupByTime = []
+        GroupByTags = {}
+        Limit = [];
     end
     
     methods
@@ -11,16 +20,7 @@ classdef QueryBuilder < handle
                 obj.series(varargin);
             elseif nargin > 0
                 obj.series(varargin{1});
-            else
-                obj.Series = {};
             end
-            obj.InfluxDB = [];
-            obj.fields();
-            obj.Tags = {};
-            obj.Before = [];
-            obj.After = [];
-            obj.Where = [];
-            obj.Limit = [];
         end
         
         % Set the client instance used for execution
