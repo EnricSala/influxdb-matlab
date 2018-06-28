@@ -50,6 +50,17 @@ classdef SeriesResult < handle
             assert(~isempty(idx), ['field "' field '" is not present']);
             values = obj.Values(idx).value;
         end
+        
+        % Convert to a timetable, with an optional timezone
+        function ttable = timetable(obj, varargin)
+            if nargin < 2
+                time = obj.time();
+            else
+                time = obj.time(varargin{1});
+            end
+            vars = {obj.Values.value};
+            ttable = timetable(time, vars{:}, 'VariableNames', obj.fields());
+        end
     end
     
     methods(Static)

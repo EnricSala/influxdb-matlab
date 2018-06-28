@@ -131,10 +131,13 @@ field_names = weather.fields()
 time = weather.time('Europe/Amsterdam');
 temperature = weather.field('temperature');
 plot(time, temperature);
+
+% Convert a series to a timetable
+ttable = weather.timetable('Europe/Paris');
 ```
 
-Notice that the time can be formatted to the desired timezone.
-The `local` timezone is used when none is specified.
+Notice that the `.time()` and `.timetable()` methods take an optional timezone argument.
+It will default to `local` if unspecified.
 
 
 Contributing
