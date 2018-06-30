@@ -136,8 +136,7 @@ plot(time, temperature);
 ttable = weather.timetable('Europe/Paris');
 ```
 
-Notice that the `.time()` and `.timetable()` methods take an optional timezone argument.
-It will default to `local` if unspecified.
+Notice that the `time()` and `timetable()` methods take an optional timezone argument.
 
 
 Contributing

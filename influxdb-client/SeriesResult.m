@@ -26,9 +26,7 @@ classdef SeriesResult < handle
         % Get the time, with an optional timezone
         function time = time(obj, varargin)
             time = obj.Time;
-            if nargin < 2
-                time.TimeZone = 'local';
-            else
+            if nargin > 1
                 time.TimeZone = varargin{1};
             end
         end
@@ -53,10 +51,10 @@ classdef SeriesResult < handle
         
         % Convert to a timetable, with an optional timezone
         function ttable = timetable(obj, varargin)
-            if nargin < 2
-                time = obj.time();
-            else
+            if nargin > 1
                 time = obj.time(varargin{1});
+            else
+                time = obj.time();
             end
             vars = {obj.Values.value};
             ttable = timetable(time, vars{:}, 'VariableNames', obj.fields());
