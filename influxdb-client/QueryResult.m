@@ -25,11 +25,15 @@ classdef QueryResult < handle
             present = arrayfun(check, varargin);
         end
         
-        % Get a serie by name
-        function series = series(obj, name)
+        % Find series by name, matching tags
+        function series = series(obj, name, varargin)
             idx = obj.indexOf(name);
             assert(~isempty(idx), ['series "' name '" is not present']);
             series = obj.Series(idx);
+            if nargin > 2
+                tags = struct(varargin{:});
+                series = obj.filterByTags(series, tags);
+            end
         end
     end
     
@@ -58,6 +62,23 @@ classdef QueryResult < handle
             assert(isfield(result, 'series'), 'the result contains no series');
             series = arrayfun(@(x) SeriesResult.from(x), result.series);
             obj = QueryResult(series);
+        end
+        
+        % Filter series by matching tags
+        function series = filterByTags(series, matchTags)
+            keys = fieldnames(matchTags);
+            selection = true(1, length(series));
+            for i = 1:length(series)
+                itemTags = series(i).tags();
+                for j = 1:length(keys)
+                    key = keys{j};
+                    if ~isfield(itemTags, key) || ...
+                            ~strcmp(matchTags.(key), itemTags.(key))
+                        selection(i) = false;
+                    end
+                end
+            end
+            series = series(selection);
         end
     end
     
