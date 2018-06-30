@@ -35,7 +35,7 @@ classdef WriteBuilder < handle
                 builder.append(newline);
             end
             builder.deleteCharAt(int32(builder.length() - 1));
-            str = builder.toString().toCharArray()';
+            str = char(builder.toString());
         end
         
         % Execute the write

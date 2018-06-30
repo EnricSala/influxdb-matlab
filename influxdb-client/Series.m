@@ -93,7 +93,7 @@ classdef Series < handle
                 builder.append(newline);
             end
             builder.deleteCharAt(int32(builder.length() - 1));
-            lines = builder.toString().toCharArray()';
+            lines = char(builder.toString());
         end
     end
     
