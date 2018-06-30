@@ -131,6 +131,77 @@ classdef QueryBuilderTest < matlab.unittest.TestCase
             exp = 'SELECT * FROM weather WHERE "city"=''barcelona'' AND "station"=~/a1|b2/';
             test.verifyEqual(q.build(), exp);
         end
+        
+        %% Group by tests
+        function empty_group_by_tags_groups_by_all(test)
+            q = QueryBuilder('weather').groupByTags();
+            exp = 'SELECT * FROM weather GROUP BY *';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function group_by_tags_asterisk_groups_by_all(test)
+            q = QueryBuilder('weather').groupByTags('*');
+            exp = 'SELECT * FROM weather GROUP BY *';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function group_by_single_tag(test)
+            q = QueryBuilder('weather').groupByTags('city');
+            exp = 'SELECT * FROM weather GROUP BY "city"';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function group_by_multiple_tags(test)
+            q = QueryBuilder('weather').groupByTags('city', 'station');
+            exp = 'SELECT * FROM weather GROUP BY "city","station"';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function group_by_time(test)
+            q = QueryBuilder('weather').groupByTime('12m');
+            exp = 'SELECT * FROM weather GROUP BY time(12m)';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function group_by_time_with_fill(test)
+            q = QueryBuilder('weather').groupByTime('12m', 'linear');
+            exp = 'SELECT * FROM weather GROUP BY time(12m) fill(linear)';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function group_by_time_with_all_tags(test)
+            q = QueryBuilder('weather').groupByTime('12m').groupByTags();
+            exp = 'SELECT * FROM weather GROUP BY time(12m),*';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function group_by_time_and_tags(test)
+            q = QueryBuilder('weather').groupByTime('12m').groupByTags('city');
+            exp = 'SELECT * FROM weather GROUP BY time(12m),"city"';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function group_by_time_with_fill_and_all_tags(test)
+            q = QueryBuilder('weather').groupByTime('12m', 'linear').groupByTags();
+            exp = 'SELECT * FROM weather GROUP BY time(12m),* fill(linear)';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function group_by_time_with_fill_and_tags(test)
+            q = QueryBuilder('weather').groupByTime('12m', 'linear').groupByTags('city');
+            exp = 'SELECT * FROM weather GROUP BY time(12m),"city" fill(linear)';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function group_by_time_position(test)
+            q = QueryBuilder('weather') ...
+                .tags('city', 'barcelona') ...
+                .groupByTime('12m', 'none') ...
+                .groupByTags('station') ...
+                .limit(100);
+            exp = 'SELECT * FROM weather WHERE "city"=''barcelona'' GROUP BY time(12m),"station" fill(none) LIMIT 100';
+            test.verifyEqual(q.build(), exp);
+        end
     end
     
 end

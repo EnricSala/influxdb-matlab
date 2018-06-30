@@ -8,7 +8,8 @@ classdef QueryBuilder < handle
         Before = []
         After = []
         Where = []
-        GroupByTime = []
+        GroupByTimeInterval = {}
+        GroupByTimeFill = []
         GroupByTags = {}
         Limit = [];
     end
@@ -153,6 +154,40 @@ classdef QueryBuilder < handle
             end
         end
         
+        % Configure a group by time clause
+        function obj = groupByTime(obj, time, varargin)
+            if ~isempty(time)
+                obj.GroupByTimeInterval = {['time(' time ')']};
+                if nargin > 2
+                    fill = varargin{1};
+                    if ~isempty(fill)
+                        obj.GroupByTimeFill = ['fill(' fill ')'];
+                    else
+                        obj.GroupByTimeFill = [];
+                    end
+                end
+            else
+                obj.GroupByTimeInterval = {};
+                obj.GroupByTimeInterval = [];
+            end
+        end
+        
+        % Configure a group by tags clause
+        function obj = groupByTags(obj, varargin)
+            if nargin > 1
+                tags = varargin;
+                for i = 1:length(tags)
+                    tag = tags{i};
+                    if ~strcmp(tag, '*')
+                        tags{i} = ['"' tag '"'];
+                    end
+                    obj.GroupByTags = tags;
+                end
+            else
+                obj.GroupByTags = {'*'};
+            end
+        end
+        
         % Configure the maximum number of points to return
         function obj = limit(obj, limit)
             obj.Limit = limit;
@@ -162,6 +197,7 @@ classdef QueryBuilder < handle
         function query = build(obj)
             query = obj.buildBaseQuery();
             query = obj.appendWhereTo(query);
+            query = obj.appendGroupByTo(query);
             query = obj.appendLimitTo(query);
         end
         
@@ -197,6 +233,21 @@ classdef QueryBuilder < handle
             condition = strjoin(clauses(ispresent), ' AND ');
             if ~isempty(condition)
                 query = [query ' WHERE ' condition];
+            end
+        end
+        
+        % Append group by clause
+        function query = appendGroupByTo(obj, query)
+            interval = obj.GroupByTimeInterval;
+            tags = obj.GroupByTags;
+            if ~isempty(interval) || ~isempty(tags)
+                groupby = strjoin([interval, tags], ',');
+                fill = obj.GroupByTimeFill;
+                if ~isempty(interval) && ~isempty(fill)
+                    query = [query ' GROUP BY ' groupby ' ' fill];
+                else
+                    query = [query ' GROUP BY ' groupby];
+                end
             end
         end
     end
