@@ -55,8 +55,27 @@ classdef InfluxDB < handle
         end
         
         % Execute a write of a line protocol string
-        function [] = runWrite(obj, lines)
-            url = [obj.Host '/write?db=' obj.Database '&precision=ms'];
+        function [] = runWrite(obj, lines, database, precision, retention, consistency)
+            params = {};
+            if nargin > 2 && ~isempty(database)
+                params{end + 1} = ['db=' urlencode(database)];
+            else
+                params{end + 1} = ['db=' urlencode(obj.Database)];
+            end
+            if nargin > 3 && ~isempty(precision)
+                assert(any(strcmp(precision, {'ns', 'u', 'ms', 's', 'm', 'h'})), ...
+                    'precision:unknown', '"%s" is not a valid precision', precision);
+                params{end + 1} = ['precision=' precision];
+            end
+            if nargin > 4  &&  ~isempty(retention)
+                params{end + 1} = ['rp=' urlencode(retention)];
+            end
+            if nargin > 5  &&  ~isempty(consistency)
+                assert(any(strcmp(consistency, {'any', 'one', 'quorum', 'all'})), ...
+                    'consistency:unknown', '"%s" is not a valid consistency', consistency);
+                params{end + 1} = ['consistency=' consistency];
+            end
+            url = [obj.Host '/write?' strjoin(params, '&')];
             opts = weboptions('Username', obj.User, 'Password', obj.Password);
             webwrite(url, lines, opts);
         end

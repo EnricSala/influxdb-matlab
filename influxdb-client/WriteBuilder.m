@@ -1,27 +1,46 @@
 classdef WriteBuilder < handle
     
     properties(Access = private)
-        InfluxDB, Points;
+        InfluxDB = []
+        Items = {}
+        Database = []
+        Precision = 'ms'
+        Consistency = []
+        RetentionPolicy = []
     end
     
     methods
-        % Constructor
-        function obj = WriteBuilder()
-            obj.InfluxDB = [];
-            obj.Points = {};
-        end
-        
         % Set the client instance used for execution
         function obj = influxdb(obj, influxdb)
             obj.InfluxDB = influxdb;
         end
         
-        % Append points
+        % Configure the database
+        function obj = database(obj, database)
+            obj.Database = database;
+        end
+        
+        % Configure the precision
+        function obj = precision(obj, precision)
+            obj.Precision = precision;
+        end
+        
+        % Configure the retention policy
+        function obj = retention(obj, retention)
+            obj.RetentionPolicy = retention;
+        end
+        
+        % Configure the consistency
+        function obj = consistency(obj, consistency)
+            obj.Consistency = consistency;
+        end
+        
+        % Append points or series
         function obj = append(obj, varargin)
             for i = 1:length(varargin)
                 item = varargin{i};
                 for j = 1:length(item)
-                    obj.Points{end + 1} = item(j);
+                    obj.Items{end + 1} = item(j);
                 end
             end
         end
@@ -29,9 +48,9 @@ classdef WriteBuilder < handle
         % Build line protocol
         function str = build(obj)
             builder = java.lang.StringBuilder();
-            for i = 1:length(obj.Points)
-                point = obj.Points{i};
-                builder.append(point.toLine());
+            for i = 1:length(obj.Items)
+                item = obj.Items{i};
+                builder.append(item.toLine(obj.Precision));
                 builder.append(newline);
             end
             builder.deleteCharAt(int32(builder.length() - 1));
@@ -43,7 +62,8 @@ classdef WriteBuilder < handle
             assert(~isempty(obj.InfluxDB), 'execute:clientNotSet', ...
                 'the influxdb client is not set for this builder');
             lines = obj.build();
-            obj.InfluxDB.runWrite(lines);
+            obj.InfluxDB.runWrite(lines, obj.Database, ...
+                obj.Precision, obj.RetentionPolicy, obj.Consistency);
         end
     end
     
