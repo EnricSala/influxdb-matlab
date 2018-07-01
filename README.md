@@ -32,7 +32,7 @@ Create an InfluxDB client instance and use it to interact with the server:
 HOST = 'http://localhost:8086';
 USER = 'user';
 PASS = 'password';
-DATABASE = 'testing';
+DATABASE = 'server_stats';
 influxdb = InfluxDB(HOST, USER, PASS, DATABASE);
 
 % Check if the InfluxDB server is running
@@ -42,7 +42,7 @@ influxdb = InfluxDB(HOST, USER, PASS, DATABASE);
 dbs = influxdb.databases()
 
 % Change the current database
-influxdb.use('production');
+influxdb.use('weather_stations');
 ```
 
 
@@ -88,6 +88,20 @@ influxdb.writer() ...
     .append(series, etc) ...
     .execute();
 ```
+
+The parameters of a write request can optionally be customized as follows:
+
+```matlab
+% Customize a write request
+influxdb.writer() ...
+    .database('another_database') ...
+    .precision('ms') ...
+    .retention('two_weeks') ...
+    .consistency('quorum') ...
+    .append(points, series) ...
+    .execute();
+```
+
 
 Querying data
 -------------
