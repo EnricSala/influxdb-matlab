@@ -155,11 +155,10 @@ classdef QueryBuilder < handle
         end
         
         % Configure a group by time clause
-        function obj = groupByTime(obj, time, varargin)
+        function obj = groupByTime(obj, time, fill)
             if ~isempty(time)
                 obj.GroupByTimeInterval = {['time(' time ')']};
                 if nargin > 2
-                    fill = varargin{1};
                     if ~isempty(fill)
                         obj.GroupByTimeFill = ['fill(' fill ')'];
                     else

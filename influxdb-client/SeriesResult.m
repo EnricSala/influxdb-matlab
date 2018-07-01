@@ -24,10 +24,10 @@ classdef SeriesResult < handle
         end
         
         % Get the time, with an optional timezone
-        function time = time(obj, varargin)
+        function time = time(obj, timezone)
             time = obj.Time;
             if nargin > 1
-                time.TimeZone = varargin{1};
+                time.TimeZone = timezone;
             end
         end
         
@@ -50,9 +50,9 @@ classdef SeriesResult < handle
         end
         
         % Convert to a timetable, with an optional timezone
-        function ttable = timetable(obj, varargin)
+        function ttable = timetable(obj, timezone)
             if nargin > 1
-                time = obj.time(varargin{1});
+                time = obj.time(timezone);
             else
                 time = obj.time();
             end
