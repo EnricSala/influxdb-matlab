@@ -48,7 +48,6 @@ classdef Series < handle
             if isdatetime(time)
                 obj.Time = time;
             elseif isfloat(time)
-                warning('timezone not specified, assuming local');
                 obj.Time = datetime(time, 'ConvertFrom', 'datenum', 'TimeZone', 'local');
             else
                 error('unsupported time type');
@@ -56,7 +55,7 @@ classdef Series < handle
         end
         
         % Format to Line Protocol
-        function lines = toLine(obj)
+        function lines = toLine(obj, precision)
             time_length = length(obj.Time);
             field_lengths = unique(cellfun(@(x) length(x.value), obj.Fields));
             assert(~isempty(obj.Time), ...
@@ -86,10 +85,12 @@ classdef Series < handle
                         error('unsupported value type');
                     end
                 end
-                if ~isempty(obj.Time)
-                    point.time(obj.Time(i));
+                point.time(obj.Time(i));
+                if nargin < 2
+                    builder.append(point.toLine());
+                else
+                    builder.append(point.toLine(precision))
                 end
-                builder.append(point.toLine());
                 builder.append(newline);
             end
             builder.deleteCharAt(int32(builder.length() - 1));

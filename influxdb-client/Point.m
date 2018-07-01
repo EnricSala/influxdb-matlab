@@ -46,18 +46,16 @@ classdef Point < handle
         % Set the time
         function obj = time(obj, time)
             if isdatetime(time)
-                obj.Time = sprintf('%i', int64(1000 * posixtime(time)));
+                obj.Time = time;
             elseif isfloat(time)
-                warning('timezone not specified, assuming local');
-                dtime = datetime(time, 'ConvertFrom', 'datenum', 'TimeZone', 'local');
-                obj.Time = sprintf('%i', int64(1000 * posixtime(dtime)));
+                obj.Time = datetime(time, 'ConvertFrom', 'datenum', 'TimeZone', 'local');
             else
                 error('unsupported time type');
             end
         end
         
         % Format to Line Protocol
-        function line = toLine(obj)
+        function line = toLine(obj, precision)
             assert(~isempty(obj.Name), 'toLine:emptyName', 'series name cannot be empty');
             assert(~isempty(obj.Fields), 'toLine:emptyFields', 'must define at least one field');
             start = strjoin([{obj.Name}, obj.Tags], ',');
@@ -65,8 +63,33 @@ classdef Point < handle
             if isempty(obj.Time)
                 line = [start, ' ', fields];
             else
-                line = [start, ' ', fields, ' ', obj.Time];
+                if nargin < 2, precision = 'ms'; end
+                line = [start, ' ', fields, ' ', obj.timeFmt(precision)];
             end
+        end
+    end
+    
+    methods(Access = private)
+        % Format the timestamp
+        function str = timeFmt(obj, precision)
+            switch precision
+                case 'ns'
+                    scale = 1000000000;
+                case 'u'
+                    scale = 1000000;
+                case 'ms'
+                    scale = 1000;
+                case 's'
+                    scale = 1;
+                case 'm'
+                    scale = 1 / 60;
+                case 'h'
+                    scale = 1 / 3600;
+                otherwise
+                    error('precision:unknown', '"%s" is not a valid precision', precision);
+            end
+            timestamp = int64(scale * posixtime(obj.Time));
+            str = sprintf('%i', timestamp);
         end
     end
     

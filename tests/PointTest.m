@@ -89,14 +89,35 @@ classdef PointTest < matlab.unittest.TestCase
             test.verifyEqual(p.toLine(), exp);
         end
         
-        function time_is_added(test)
+        function time_is_added_in_millis_by_default(test)
             millis = 1529933525520;
-            dtime = datetime(millis / 1000, 'ConvertFrom', 'posixtime');
+            time = datetime(millis / 1000, 'ConvertFrom', 'posixtime');
             p = Point('weather') ...
                 .fields('temperature', 24.3) ...
-                .time(dtime);
+                .time(time);
             exp = 'weather temperature=24.3 1529933525520';
             test.verifyEqual(p.toLine(), exp);
+        end
+        
+        function time_supports_different_precisions(test)
+            millis = 1529933525520;
+            time = datetime(millis / 1000, 'ConvertFrom', 'posixtime');
+            p = Point('weather') ...
+                .fields('temperature', 24.3);
+            precisions = struct( ...
+                'ns', '1529933525520000000', ...
+                'u', '1529933525520000', ...
+                'ms', '1529933525520', ...
+                's', '1529933526', ...
+                'm', '25498892', ...
+                'h', '424982');
+            names = fieldnames(precisions);
+            for i = 1:length(names)
+                name = names{i};
+                exp = [' ', precisions.(name)];
+                line = p.time(time).toLine(name);
+                test.verifyTrue(endsWith(line, exp));
+            end
         end
         
         function every_property_is_used(test)
