@@ -1,16 +1,16 @@
 classdef Series < handle
     
     properties(Access = private)
-        Name, Tags, Fields, Time;
+        Name = []
+        Tags = {}
+        Fields = {}
+        Time = []
     end
     
     methods
         % Constructor
         function obj = Series(name)
             obj.Name = name;
-            obj.Tags = {};
-            obj.Fields = {};
-            obj.Time = [];
         end
         
         % Add a tag

@@ -1,16 +1,16 @@
 classdef Point < handle
     
     properties(Access = private)
-        Name, Tags, Fields, Time;
+        Name = []
+        Tags = {}
+        Fields = {}
+        Time = []
     end
     
     methods
         % Constructor
         function obj = Point(name)
             obj.Name = name;
-            obj.Tags = {};
-            obj.Fields = {};
-            obj.Time = [];
         end
         
         % Add a tag
