@@ -47,14 +47,19 @@ classdef WriteBuilder < handle
         
         % Build line protocol
         function str = build(obj)
-            builder = java.lang.StringBuilder();
-            for i = 1:length(obj.Items)
-                item = obj.Items{i};
-                builder.append(item.toLine(obj.Precision));
-                builder.append(newline);
+            if isempty(obj.Items)
+                warning('this writer is empty');
+                str = '';
+            else
+                builder = java.lang.StringBuilder();
+                for i = 1:length(obj.Items)
+                    item = obj.Items{i};
+                    builder.append(item.toLine(obj.Precision));
+                    builder.append(newline);
+                end
+                builder.deleteCharAt(int32(builder.length() - 1));
+                str = char(builder.toString());
             end
-            builder.deleteCharAt(int32(builder.length() - 1));
-            str = char(builder.toString());
         end
         
         % Execute the write
