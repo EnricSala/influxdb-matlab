@@ -45,6 +45,14 @@ dbs = influxdb.databases()
 influxdb.use('weather_stations');
 ```
 
+If you plan on doing very large requests you may need to adjust the timeouts:
+
+```matlab
+% Configure timeouts
+influxdb.setReadTimeout(10);
+influxdb.setWriteTimeout(10);
+```
+
 
 Writing data
 ------------
