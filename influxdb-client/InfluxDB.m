@@ -1,7 +1,7 @@
 classdef InfluxDB < handle
     
     properties(Access = private)
-        Host = ''
+        Url = ''
         User = ''
         Password = ''
         Database = ''
@@ -11,8 +11,8 @@ classdef InfluxDB < handle
     
     methods
         % Constructor
-        function obj = InfluxDB(host, user, password, database)
-            obj.Host = host;
+        function obj = InfluxDB(url, user, password, database)
+            obj.Url = url;
             obj.User = user;
             obj.Password = password;
             obj.Database = database;
@@ -32,7 +32,7 @@ classdef InfluxDB < handle
         function [ok, millis] = ping(obj)
             try
                 timer = tic;
-                webread([obj.Host '/ping']);
+                webread([obj.Url '/ping']);
                 millis = toc(timer) * 1000;
                 ok = true;
             catch
@@ -43,7 +43,7 @@ classdef InfluxDB < handle
         
         % Show databases
         function databases = databases(obj)
-            url = [obj.Host '/query'];
+            url = [obj.Url '/query'];
             opts = weboptions('Timeout', obj.ReadTimeout, ...
                 'Username', obj.User, 'Password', obj.Password);
             response = webread(url, 'q', 'SHOW DATABASES', opts);
@@ -57,7 +57,7 @@ classdef InfluxDB < handle
         
         % Execute a query string
         function result = runQuery(obj, query)
-            url = [obj.Host '/query'];
+            url = [obj.Url '/query'];
             opts = weboptions('Timeout', obj.ReadTimeout, ...
                 'Username', obj.User, 'Password', obj.Password);
             response = webread(url, 'db', obj.Database, 'epoch', 'ms', 'q', query, opts);
@@ -96,7 +96,7 @@ classdef InfluxDB < handle
                     'consistency:unknown', '"%s" is not a valid consistency', consistency);
                 params{end + 1} = ['consistency=' consistency];
             end
-            url = [obj.Host '/write?' strjoin(params, '&')];
+            url = [obj.Url '/write?' strjoin(params, '&')];
             weboptions('Timeout', obj.WriteTimeout, ...
                 'Username', obj.User, 'Password', obj.Password);
             webwrite(url, lines, opts);

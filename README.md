@@ -29,11 +29,11 @@ Create an InfluxDB client instance and use it to interact with the server:
 
 ```matlab
 % Build an InfluxDB client
-HOST = 'http://localhost:8086';
+URL = 'http://localhost:8086';
 USER = 'user';
 PASS = 'password';
 DATABASE = 'server_stats';
-influxdb = InfluxDB(HOST, USER, PASS, DATABASE);
+influxdb = InfluxDB(URL, USER, PASS, DATABASE);
 
 % Check the status of the InfluxDB instance
 [ok, ping] = influxdb.ping()
