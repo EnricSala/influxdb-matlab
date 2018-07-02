@@ -26,7 +26,7 @@ classdef Series < handle
         % Add a field value
         function obj = field(obj, key, value)
             if isempty(value)
-                warning(['value of field ' key ' is empty']);
+                error('field:emptyValue', 'value of field "%s" is empty', key);
             elseif isnumeric(value) || islogical(value)
                 field = struct('key', key, 'value', value);
                 obj.Fields{end + 1} = field;

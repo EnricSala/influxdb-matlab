@@ -25,7 +25,9 @@ classdef Point < handle
         
         % Add a field value
         function obj = field(obj, key, value)
-            if isfloat(value)
+            if isempty(value)
+                error('field:emptyValue', 'value of field "%s" is empty', key);
+            elseif isfloat(value)
                 obj.Fields{end + 1} = sprintf('%s=%.8g', key, value);
             elseif isinteger(value)
                 obj.Fields{end + 1} = sprintf('%s=%ii', key, value);

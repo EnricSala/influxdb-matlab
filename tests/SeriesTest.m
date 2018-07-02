@@ -29,6 +29,12 @@ classdef SeriesTest < matlab.unittest.TestCase
             test.verifyError(@() s.toLine(), 'toLine:emptyFields');
         end
         
+        function field_with_empty_value_fails(test)
+            f = @() Series('weather') ...
+                .fields('temperature', []);
+            test.verifyError(f, 'field:emptyValue');
+        end
+        
         function single_field(test)
             s = Series('weather') ...
                 .time(test.Time) ...

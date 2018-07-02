@@ -11,6 +11,11 @@ classdef PointTest < matlab.unittest.TestCase
             test.verifyError(f, 'toLine:emptyFields');
         end
         
+        function field_with_empty_value_fails(test)
+            f = @() Point('weather').fields('temperature', []);
+            test.verifyError(f, 'field:emptyValue');
+        end
+        
         function single_field(test)
             p = Point('weather').fields('temperature', 24.3);
             exp = 'weather temperature=24.3';
