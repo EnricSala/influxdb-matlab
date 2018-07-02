@@ -97,7 +97,7 @@ classdef InfluxDB < handle
                 params{end + 1} = ['consistency=' consistency];
             end
             url = [obj.Url '/write?' strjoin(params, '&')];
-            weboptions('Timeout', obj.WriteTimeout, ...
+            opts = weboptions('Timeout', obj.WriteTimeout, ...
                 'Username', obj.User, 'Password', obj.Password);
             webwrite(url, lines, opts);
         end
