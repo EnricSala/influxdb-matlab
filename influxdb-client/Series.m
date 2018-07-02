@@ -77,12 +77,10 @@ classdef Series < handle
                     field = obj.Fields{f};
                     name = field.key;
                     value = field.value;
-                    if isnumeric(value) || islogical(value)
-                        point.field(name, value(i));
-                    elseif iscell(value)
+                    if iscell(value)
                         point.field(name, value{i});
                     else
-                        error('unsupported value type');
+                        point.field(name, value(i));
                     end
                 end
                 point.time(obj.Time(i));
