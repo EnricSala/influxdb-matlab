@@ -28,13 +28,17 @@ classdef InfluxDB < handle
             obj.WriteTimeout = timeout;
         end
         
-        % Test the connection with a ping
+        % Check the status of the InfluxDB instance
         function [ok, millis] = ping(obj)
-            timer = tic;
-            url = [obj.Host '/ping'];
-            [~, status] = urlread(url);
-            millis = toc(timer) * 1000;
-            ok = logical(status);
+            try
+                timer = tic;
+                webread([obj.Host '/ping']);
+                millis = toc(timer) * 1000;
+                ok = true;
+            catch
+                millis = Inf;
+                ok = false;
+            end
         end
         
         % Show databases

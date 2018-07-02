@@ -35,7 +35,7 @@ PASS = 'password';
 DATABASE = 'server_stats';
 influxdb = InfluxDB(HOST, USER, PASS, DATABASE);
 
-% Check if the InfluxDB server is running
+% Check the status of the InfluxDB instance
 [ok, ping] = influxdb.ping()
 
 % Show the databases in the server
