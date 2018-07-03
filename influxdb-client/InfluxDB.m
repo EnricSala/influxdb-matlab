@@ -106,6 +106,19 @@ classdef InfluxDB < handle
         function builder = writer(obj)
             builder = WriteBuilder().influxdb(obj);
         end
+        
+        % Execute other queries or commands
+        function response = runCommand(obj, command, requiresPost)
+            url = [obj.Url '/query'];
+            opts = weboptions('Username', obj.User, 'Password', obj.Password);
+            if nargin > 2 && requiresPost
+                opts.Timeout = obj.WriteTimeout;
+                response = webwrite(url, 'q', command, opts);
+            else
+                opts.Timeout = obj.ReadTimeout;
+                response = webread(url, 'q', command, opts);
+            end
+        end
     end
     
 end

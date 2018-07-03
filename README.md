@@ -170,6 +170,27 @@ ttable = weather.timetable('Europe/Paris');
 
 Notice that the `time()` and `timetable()` methods take an optional timezone argument.
 
+Other commands
+--------------
+
+Use `runCommand(command, requiresPost)` for executing commands not provided in the library:
+
+```matlab
+% Show series and tag keys in a database
+influxdb.runCommand('SHOW SERIES ON "example" FROM "weather"');
+influxdb.runCommand('SHOW TAG KEYS ON "example" FROM "weather"');
+
+% Create and drop a database
+influxdb.runCommand('CREATE DATABASE "example"', true);
+influxdb.runCommand('DROP DATABASE "example"', true);
+
+% Create a retention policy that keeps data for one day
+influxdb.runCommand('CREATE RETENTION POLICY "one_day" ON "example" DURATION 1d REPLICATION 1', true);
+influxdb.runCommand('SHOW RETENTION POLICIES ON "example"', false);
+```
+
+See the [InfluxDB documentation][influxdb-docs] for more schema exploration and management commands.
+
 
 Contributing
 ------------
