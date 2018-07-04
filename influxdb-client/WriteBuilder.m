@@ -50,6 +50,9 @@ classdef WriteBuilder < handle
             if isempty(obj.Items)
                 warning('this writer is empty');
                 str = '';
+            elseif isscalar(obj.Items)
+                item = obj.Items{1};
+                str = item.toLine();
             else
                 builder = java.lang.StringBuilder();
                 for i = 1:length(obj.Items)
