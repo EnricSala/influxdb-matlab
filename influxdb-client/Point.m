@@ -25,10 +25,10 @@ classdef Point < handle
         
         % Add a field value
         function obj = field(obj, key, value)
-            if isempty(value)
-                error('field:emptyValue', 'value of field "%s" is empty', key);
-            elseif isfloat(value)
-                obj.Fields{end + 1} = sprintf('%s=%.8g', key, value);
+            if isfloat(value)
+                if ~isempty(value) && isfinite(value)
+                    obj.Fields{end + 1} = sprintf('%s=%.8g', key, value);
+                end
             elseif isinteger(value)
                 obj.Fields{end + 1} = sprintf('%s=%ii', key, value);
             elseif ischar(value)
@@ -58,15 +58,18 @@ classdef Point < handle
         
         % Format to Line Protocol
         function line = toLine(obj, precision)
-            assert(~isempty(obj.Name), 'toLine:emptyName', 'series name cannot be empty');
-            assert(~isempty(obj.Fields), 'toLine:emptyFields', 'must define at least one field');
-            start = strjoin([{obj.Name}, obj.Tags], ',');
-            fields = strjoin(obj.Fields, ',');
-            if isempty(obj.Time)
-                line = [start, ' ', fields];
+            if isempty(obj.Fields)
+                line = '';
             else
-                if nargin < 2, precision = 'ms'; end
-                line = [start, ' ', fields, ' ', obj.timeFmt(precision)];
+                assert(~isempty(obj.Name), 'toLine:emptyName', 'series name cannot be empty');
+                start = strjoin([{obj.Name}, obj.Tags], ',');
+                fields = strjoin(obj.Fields, ',');
+                if isempty(obj.Time)
+                    line = [start, ' ', fields];
+                else
+                    if nargin < 2, precision = 'ms'; end
+                    line = [start, ' ', fields, ' ', obj.timeFmt(precision)];
+                end
             end
         end
     end

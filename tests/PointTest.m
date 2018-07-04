@@ -2,22 +2,30 @@ classdef PointTest < matlab.unittest.TestCase
     
     methods(Test)
         function build_fails_when_empty_name(test)
-            f = @() Point('').toLine();
+            f = @() Point('').fields('temperature', 24.3).toLine();
             test.verifyError(f, 'toLine:emptyName');
-        end
-        
-        function build_fails_when_empty_fields(test)
-            f = @() Point('weather').toLine();
-            test.verifyError(f, 'toLine:emptyFields');
-        end
-        
-        function field_with_empty_value_fails(test)
-            f = @() Point('weather').fields('temperature', []);
-            test.verifyError(f, 'field:emptyValue');
         end
         
         function single_field(test)
             p = Point('weather').fields('temperature', 24.3);
+            exp = 'weather temperature=24.3';
+            test.verifyEqual(p.toLine(), exp);
+        end
+        
+        function when_empty_fields_return_empty(test)
+            p = Point('weather');
+            test.verifyEqual(p.toLine(), '');
+        end
+        
+        function empty_fields_are_ignored(test)
+            p = Point('weather').fields('temperature', [], 'humidity', 60.7);
+            exp = 'weather humidity=60.7';
+            test.verifyEqual(p.toLine(), exp);
+        end
+        
+        function nonfinite_fields_are_ignored(test)
+            p = Point('weather').fields('temperature', 24.3) ...
+                .fields('rain', Inf, 'humidity', NaN, 'sun', -Inf);
             exp = 'weather temperature=24.3';
             test.verifyEqual(p.toLine(), exp);
         end

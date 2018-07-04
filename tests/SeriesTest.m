@@ -180,6 +180,15 @@ classdef SeriesTest < matlab.unittest.TestCase
                 'weather,city=barcelona temperature=-3.5 1529933581618'];
             test.verifyEqual(s.toLine(), exp);
         end
+        
+        function skips_nonfinite_samples(test)
+            s = Series('weather') ...
+                .time(test.Time) ...
+                .fields('temperature', [24.3, Inf]) ...
+                .fields('humidity', [-Inf, NaN]);
+            exp = 'weather temperature=24.3 1529933525520';
+            test.verifyEqual(s.toLine(), exp);
+        end
     end
     
 end

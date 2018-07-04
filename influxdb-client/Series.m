@@ -85,11 +85,14 @@ classdef Series < handle
                 end
                 point.time(obj.Time(i));
                 if nargin < 2
-                    builder.append(point.toLine());
+                    line = point.toLine();
                 else
-                    builder.append(point.toLine(precision))
+                    line = point.toLine(precision);
                 end
-                builder.append(newline);
+                if ~isempty(line)
+                    builder.append(line);
+                    builder.append(newline);
+                end
             end
             builder.deleteCharAt(int32(builder.length() - 1));
             lines = char(builder.toString());
