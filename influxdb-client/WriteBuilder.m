@@ -46,22 +46,24 @@ classdef WriteBuilder < handle
         end
         
         % Build line protocol
-        function str = build(obj)
+        function lines = build(obj)
+            lines = '';
             if isempty(obj.Items)
                 warning('this writer is empty');
-                str = '';
             elseif isscalar(obj.Items)
                 item = obj.Items{1};
-                str = item.toLine();
+                lines = item.toLine(obj.Precision);
             else
-                builder = java.lang.StringBuilder();
                 for i = 1:length(obj.Items)
                     item = obj.Items{i};
-                    builder.append(item.toLine(obj.Precision));
-                    builder.append(newline);
+                    line = item.toLine(obj.Precision);
+                    if ~isempty(line)
+                        lines = [lines, line, newline];
+                    end
                 end
-                builder.deleteCharAt(int32(builder.length() - 1));
-                str = char(builder.toString());
+                if ~isempty(lines)
+                    lines = lines(1:end - 1);
+                end
             end
         end
         
