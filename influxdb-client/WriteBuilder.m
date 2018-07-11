@@ -47,23 +47,14 @@ classdef WriteBuilder < handle
         
         % Build line protocol
         function lines = build(obj)
-            lines = '';
             if isempty(obj.Items)
                 warning('this writer is empty');
-            elseif isscalar(obj.Items)
-                item = obj.Items{1};
-                lines = item.toLine(obj.Precision);
+                lines = '';
             else
-                for i = 1:length(obj.Items)
-                    item = obj.Items{i};
-                    line = item.toLine(obj.Precision);
-                    if ~isempty(line)
-                        lines = [lines, line, newline];
-                    end
-                end
-                if ~isempty(lines)
-                    lines = lines(1:end - 1);
-                end
+                f = @(x) x.toLine(obj.Precision);
+                items = cellfun(f, obj.Items, 'UniformOutput', false);
+                nonempty = cellfun(@(x) ~isempty(x), items);
+                lines = strjoin(items(nonempty), newline);
             end
         end
         
