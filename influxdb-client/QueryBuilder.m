@@ -11,7 +11,7 @@ classdef QueryBuilder < handle
         GroupByTimeInterval = {}
         GroupByTimeFill = []
         GroupByTags = {}
-        Limit = [];
+        Limit = []
     end
     
     methods
