@@ -15,7 +15,7 @@ classdef Series < handle
         
         % Add a tag
         function obj = tag(obj, key, value)
-            obj.Tags{end + 1} = struct('key', key, 'value', value);
+            obj.Tags{end + 1} = [key '=' value];
         end
         
         % Add multiple tags at once
@@ -58,6 +58,8 @@ classdef Series < handle
         function lines = toLine(obj, precision)
             time_length = length(obj.Time);
             field_lengths = unique(cellfun(@(x) length(x.value), obj.Fields));
+            
+            % Make sure the dimensions match
             assert(~isempty(obj.Time), ...
                 'toLine:emptyTime', 'the time vector cannot be empty');
             assert(~isempty(field_lengths), ...
@@ -66,36 +68,78 @@ classdef Series < handle
                 'toLine:sizeMismatch', 'all fields must have the same length');
             assert(time_length == field_lengths || time_length == 0, ...
                 'toLine:sizeMismatch', 'time and fields must have the same length');
-            builder = java.lang.StringBuilder();
+            
+            % Obtain the time precision scale
+            if nargin < 2, precision = 'ms'; end
+            scale = obj.timeScale(precision);
+            timestamp = int64(scale * posixtime(obj.Time));
+            
+            % Create a line for each sample
+            prefix = [strjoin([{obj.Name}, obj.Tags], ','), ' '];
+            builder = '';
             for i = 1:field_lengths
-                point = Point(obj.Name);
-                for t = 1:length(obj.Tags)
-                    tag = obj.Tags{t};
-                    point.tag(tag.key, tag.value);
-                end
+                values = '';
                 for f = 1:length(obj.Fields)
                     field = obj.Fields{f};
                     name = field.key;
                     value = field.value;
                     if iscell(value)
-                        point.field(name, value{i});
+                        str = obj.fieldFmt(name, value{i});
                     else
-                        point.field(name, value(i));
+                        str = obj.fieldFmt(name, value(i));
+                    end
+                    if ~isempty(str)
+                        values = [values, str, ','];
                     end
                 end
-                point.time(obj.Time(i));
-                if nargin < 2
-                    line = point.toLine();
-                else
-                    line = point.toLine(precision);
-                end
-                if ~isempty(line)
-                    builder.append(line);
-                    builder.append(newline);
+                if ~isempty(values)
+                    values = values(1:end-1);
+                    time = sprintf(' %i', timestamp(i));
+                    builder = [builder, prefix, values, time, newline];
                 end
             end
-            builder.deleteCharAt(int32(builder.length() - 1));
-            lines = char(builder.toString());
+            lines = builder(1:end-1);
+        end
+    end
+    
+    methods(Static, Access = private)
+        % Format a field
+        function str = fieldFmt(key, value)
+            if isfloat(value)
+                if ~isempty(value) && isfinite(value)
+                    str = sprintf('%s=%.8g', key, value);
+                else
+                    str = '';
+                end
+            elseif isinteger(value)
+                str = sprintf('%s=%ii', key, value);
+            elseif ischar(value)
+                str = [key '="' value '"'];
+            elseif islogical(value)
+                str = [key '=' iif(value, 'true', 'false')];
+            else
+                error('unsupported value type');
+            end
+        end
+        
+        % Otain the scale for a precision
+        function scale = timeScale(precision)
+            switch precision
+                case 'ns'
+                    scale = 1000000000;
+                case 'u'
+                    scale = 1000000;
+                case 'ms'
+                    scale = 1000;
+                case 's'
+                    scale = 1;
+                case 'm'
+                    scale = 1 / 60;
+                case 'h'
+                    scale = 1 / 3600;
+                otherwise
+                    error('precision:unknown', '"%s" is not a valid precision', precision);
+            end
         end
     end
     
