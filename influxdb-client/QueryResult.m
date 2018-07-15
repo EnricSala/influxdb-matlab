@@ -25,12 +25,16 @@ classdef QueryResult < handle
         
         % Find series by name, matching tags
         function series = series(obj, name, varargin)
-            idx = obj.indexOf(name);
-            assert(~isempty(idx), ['series "' name '" is not present']);
-            series = obj.Series(idx);
-            if nargin > 2
-                tags = struct(varargin{:});
-                series = obj.filterByTags(series, tags);
+            if nargin < 2
+                series = obj.Series;
+            else
+                idx = obj.indexOf(name);
+                assert(~isempty(idx), ['series "' name '" is not present']);
+                series = obj.Series(idx);
+                if nargin > 2
+                    tags = struct(varargin{:});
+                    series = obj.filterByTags(series, tags);
+                end
             end
         end
     end
