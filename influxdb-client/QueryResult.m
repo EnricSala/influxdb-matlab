@@ -50,8 +50,12 @@ classdef QueryResult < handle
     methods(Static)
         % Convert a response to objects
         function objs = from(response)
-            assert(~isempty(response.results), 'the response contains no results');
-            objs = arrayfun(@(x) QueryResult.wrap(x), response.results);
+            assert(~isempty(response.results), ...
+                'from:empty', 'the response contains no results');
+            objs = arrayfun(@(x) QueryResult.wrap(x), ...
+                response.results, 'UniformOutput', false);
+            nonempty = cellfun(@(x) ~isempty(x), objs);
+            objs = cellfun(@(x) x, objs(nonempty));
         end
     end
     
@@ -61,9 +65,12 @@ classdef QueryResult < handle
             if isfield(result, 'error')
                 error('query:error', 'query error: %s', result.error);
             end
-            assert(isfield(result, 'series'), 'the result contains no series');
-            series = arrayfun(@(x) SeriesResult.from(x), result.series);
-            obj = QueryResult(series);
+            if isfield(result, 'series')
+                series = arrayfun(@(x) SeriesResult.from(x), result.series);
+                obj = QueryResult(series);
+            else
+                obj = [];
+            end
         end
         
         % Filter series by matching tags
