@@ -173,20 +173,20 @@ Notice that the `time()` and `timetable()` methods take an optional timezone arg
 Other commands
 --------------
 
-Use `runCommand(command, requiresPost)` for executing commands not provided in the library:
+Use `runCommand(command, [database], [requiresPost])` for executing arbitrary commands:
 
 ```matlab
-% Show series and tag keys in a database
-influxdb.runCommand('SHOW SERIES ON "example" FROM "weather"');
-influxdb.runCommand('SHOW TAG KEYS ON "example" FROM "weather"');
+% Show databases then create one
+influxdb.runCommand('SHOW DATABASES')
+influxdb.runCommand('CREATE DATABASE "example"', true)
 
-% Create and drop a database
-influxdb.runCommand('CREATE DATABASE "example"', true);
-influxdb.runCommand('DROP DATABASE "example"', true);
+% Show measurements and tag keys
+influxdb.runCommand('SHOW MEASUREMENTS', 'example')
+influxdb.runCommand('SHOW TAG KEYS', 'example')
 
 % Create a retention policy that keeps data for one day
-influxdb.runCommand('CREATE RETENTION POLICY "one_day" ON "example" DURATION 1d REPLICATION 1', true);
-influxdb.runCommand('SHOW RETENTION POLICIES ON "example"', false);
+influxdb.runCommand('CREATE RETENTION POLICY "one_day" ON "example" DURATION 1d REPLICATION 1', true)
+influxdb.runCommand('SHOW RETENTION POLICIES', 'example')
 ```
 
 See the [InfluxDB documentation][influxdb-docs] for more schema exploration and management commands.

@@ -43,10 +43,7 @@ classdef InfluxDB < handle
         
         % Show databases
         function databases = databases(obj)
-            url = [obj.Url '/query'];
-            opts = weboptions('Timeout', obj.ReadTimeout, ...
-                'Username', obj.User, 'Password', obj.Password);
-            response = webread(url, 'q', 'SHOW DATABASES', opts);
+            response = obj.runCommand('SHOW DATABASES');
             databases = [response.results.series.values{:}];
         end
         
@@ -108,15 +105,24 @@ classdef InfluxDB < handle
         end
         
         % Execute other queries or commands
-        function response = runCommand(obj, command, requiresPost)
+        function response = runCommand(obj, command, varargin)
+            idx = find(cellfun(@(x) ischar(x), varargin), 1, 'first');
+            database = iif(isempty(idx), '', varargin{idx});
+            idx = find(cellfun(@(x) islogical(x), varargin), 1, 'first');
+            requiresPost = iif(isempty(idx), false, varargin{idx});
+            if isempty(database)
+                params = {'q', command};
+            else
+                params = {'db', database, 'q', command};
+            end
             url = [obj.Url '/query'];
             opts = weboptions('Username', obj.User, 'Password', obj.Password);
-            if nargin > 2 && requiresPost
+            if requiresPost
                 opts.Timeout = obj.WriteTimeout;
-                response = webwrite(url, 'q', command, opts);
+                response = webwrite(url, params{:}, opts);
             else
                 opts.Timeout = obj.ReadTimeout;
-                response = webread(url, 'q', command, opts);
+                response = webread(url, params{:}, opts);
             end
         end
     end
