@@ -6,13 +6,13 @@ classdef SeriesTest < matlab.unittest.TestCase
     
     methods(TestMethodSetup)
         function setup(test)
-            timestamps = [1529933525520, 1529933581618];
+            timestamps = [1529933525520; 1529933581618];
             test.Time = datetime(timestamps / 1000, 'ConvertFrom', 'posixtime');
-            test.Temperature = [24.3, -3.5];
-            test.Humidity = [60.7, 54.2];
-            test.RainDrops = int64([123456789, -987654321]);
-            test.WindDirection = {'north', 'west'};
-            test.Raining = [true, false];
+            test.Temperature = [24.3; -3.5];
+            test.Humidity = [60.7; 54.2];
+            test.RainDrops = int64([123456789; -987654321]);
+            test.WindDirection = {'north'; 'west'};
+            test.Raining = [true; false];
         end
     end
     
@@ -184,8 +184,8 @@ classdef SeriesTest < matlab.unittest.TestCase
         function skips_nonfinite_fields(test)
             s = Series('weather') ...
                 .time(test.Time) ...
-                .fields('temperature', [NaN, -3.5]) ...
-                .fields('humidity', [60.7, Inf]);
+                .fields('temperature', [NaN; -3.5]) ...
+                .fields('humidity', [60.7; Inf]);
             exp = [ ...
                 'weather humidity=60.7 1529933525520' newline ...
                 'weather temperature=-3.5 1529933581618'];
@@ -195,8 +195,8 @@ classdef SeriesTest < matlab.unittest.TestCase
         function skips_nonfinite_samples(test)
             s = Series('weather') ...
                 .time(test.Time) ...
-                .fields('temperature', [24.3, Inf]) ...
-                .fields('humidity', [-Inf, NaN]);
+                .fields('temperature', [24.3; Inf]) ...
+                .fields('humidity', [-Inf; NaN]);
             exp = 'weather temperature=24.3 1529933525520';
             test.verifyEqual(s.toLine(), exp);
         end
