@@ -1,7 +1,7 @@
 classdef SeriesResult < handle
     
     properties(Access = private)
-        Name, Time, Tags, Values;
+        Name, Time, Tags, Fields, Values
     end
     
     methods
@@ -10,6 +10,7 @@ classdef SeriesResult < handle
             obj.Name = name;
             obj.Time = time;
             obj.Tags = tags;
+            obj.Fields = {values.field};
             obj.Values = values;
         end
         
@@ -33,7 +34,7 @@ classdef SeriesResult < handle
         
         % List fields
         function fields = fields(obj)
-            fields = {obj.Values.field};
+            fields = obj.Fields;
         end
         
         % Check if the result contains these fields

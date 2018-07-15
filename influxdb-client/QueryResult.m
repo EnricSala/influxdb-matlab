@@ -1,22 +1,20 @@
 classdef QueryResult < handle
     
     properties(Access = private)
-        Series;
+        Names, Series
     end
     
     methods
         % Constructor
         function obj = QueryResult(series)
+            obj.Names = arrayfun(@(x) x.name(), series, ...
+                'UniformOutput', false)';
             obj.Series = series;
         end
         
         % List names of the series
         function names = names(obj)
-            N = length(obj.Series);
-            names = cell(1, N);
-            for i = 1:N
-                names{i} = obj.Series(i).name();
-            end
+            names = obj.Names;
         end
         
         % Check if the result contains these series
