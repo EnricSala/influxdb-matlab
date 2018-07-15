@@ -231,6 +231,31 @@ classdef SeriesTest < matlab.unittest.TestCase
                 test.verifyTrue(endsWith(line, exp));
             end
         end
+        
+        function imports_fields_from_table(test)
+            props = {test.Temperature, test.WindDirection};
+            names = {'temperature', 'wind_direction'};
+            data = table(props{:}, 'VariableNames', names);
+            s = Series('weather') ...
+                .time(test.Time) ...
+                .import(data);
+            exp = [ ...
+                'weather temperature=24.3,wind_direction="north" 1529933525520' newline ...
+                'weather temperature=-3.5,wind_direction="west" 1529933581618'];
+            test.verifyEqual(s.toLine(), exp);
+        end
+        
+        function imports_time_and_fields_from_timetable(test)
+            props = {test.Temperature, test.WindDirection};
+            names = {'temperature', 'wind_direction'};
+            data = timetable(test.Time, props{:}, 'VariableNames', names);
+            s = Series('weather') ...
+                .import(data);
+            exp = [ ...
+                'weather temperature=24.3,wind_direction="north" 1529933525520' newline ...
+                'weather temperature=-3.5,wind_direction="west" 1529933581618'];
+            test.verifyEqual(s.toLine(), exp);
+        end
     end
     
 end

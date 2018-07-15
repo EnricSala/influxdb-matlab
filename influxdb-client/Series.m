@@ -54,6 +54,19 @@ classdef Series < handle
             end
         end
         
+        % Import data from other structures
+        function obj = import(obj, data)
+            if istimetable(data) || istable(data)
+                insert = @(x) obj.field(x, data.(x));
+                cellfun(insert, data.Properties.VariableNames);
+                if istimetable(data)
+                    obj.time(data.Properties.RowTimes);
+                end
+            else
+                error('unsupported data structure');
+            end
+        end
+        
         % Format to Line Protocol
         function lines = toLine(obj, precision)
             time_length = length(obj.Time);
