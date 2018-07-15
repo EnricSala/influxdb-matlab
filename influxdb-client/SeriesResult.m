@@ -50,6 +50,12 @@ classdef SeriesResult < handle
             values = obj.Values(idx).value;
         end
         
+        % Convert to a table
+        function result = table(obj)
+            vars = {obj.Values.value};
+            result = table(vars{:}, 'VariableNames', obj.fields());
+        end
+        
         % Convert to a timetable, with an optional timezone
         function ttable = timetable(obj, timezone)
             if nargin > 1

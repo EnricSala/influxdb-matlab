@@ -170,8 +170,9 @@ time = weather.time('Europe/Amsterdam');
 temperature = weather.field('temperature');
 plot(time, temperature);
 
-% Convert a series to a timetable
-ttable = weather.timetable('Europe/Paris');
+% Convert a series to a table or timetable
+mytable = weather.table();
+mytable = weather.timetable('Europe/Paris');
 ```
 
 Notice that the `time()` and `timetable()` methods take an optional timezone argument.
