@@ -57,14 +57,16 @@ classdef SeriesResult < handle
         end
         
         % Convert to a timetable, with an optional timezone
-        function ttable = timetable(obj, timezone)
+        function result = timetable(obj, timezone)
+            assert(~isempty(obj.Time), 'timetable:emptyTime', ...
+                'cannot convert to a timetable because the time is empty');
             if nargin > 1
                 time = obj.time(timezone);
             else
                 time = obj.time();
             end
             vars = {obj.Values.value};
-            ttable = timetable(time, vars{:}, 'VariableNames', obj.fields());
+            result = timetable(time, vars{:}, 'VariableNames', obj.fields());
         end
     end
     
