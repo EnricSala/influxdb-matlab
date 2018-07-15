@@ -193,7 +193,10 @@ influxdb.runCommand('SHOW TAG KEYS', 'example')
 
 % Create a retention policy that keeps data for one day
 influxdb.runCommand('CREATE RETENTION POLICY "one_day" ON "example" DURATION 1d REPLICATION 1', true)
-influxdb.runCommand('SHOW RETENTION POLICIES', 'example')
+
+% Convert a command result to a table
+result = influxdb.runCommand('SHOW RETENTION POLICIES', 'example')
+policies = result.series().table()
 ```
 
 See the [InfluxDB documentation][influxdb-docs] for more schema exploration and management commands.

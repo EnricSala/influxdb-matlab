@@ -81,52 +81,62 @@ classdef SeriesResult < handle
     methods(Static)
         % Convert a series result to an object
         function obj = from(serie)
-            name = serie.name;
-            columns = serie.columns;
+            fields = serie.columns;
             values = serie.values;
             
-            % Check if empty result
-            if isempty(columns) || isempty(values)
-                warning(['serie ''' name ''' is empty']);
-                obj = [];
-                return
+            % Obtain the name if present
+            if isfield(serie, 'name')
+                name = serie.name;
+            else
+                name = '';
             end
             
-            % Extract the tags if present
+            % Obtain the tags if present
             if isfield(serie, 'tags')
                 tags = serie.tags;
             else
                 tags = struct();
             end
             
+            % Check if the series is empty
+            if isempty(fields) || isempty(values)
+                warning(['serie "' name '" is empty']);
+                obj = [];
+                return
+            end
+            
             % Prepare the values in a cell format
             N = size(values, 1);
-            fields = columns(2:end);
             if iscell(values)
-                % Implies there are non-numeric values
-                C = length(values{1});
-                celled = cell(N, C);
+                % There are non-numeric values
+                celled = cell(N, length(values{1}));
                 for i = 1:N
                     row = values{i};
                     if iscell(row)
-                        % The row contains non-numeric values
                         celled(i, :) = row;
                     else
-                        % The row is all numeric, or NaN
                         celled(i, :) = num2cell(row);
                     end
                 end
-                time = SeriesResult.toDatetime(cell2mat(celled(:, 1)));
             else
                 % All values are numeric
-                C = size(values, 2);
-                time = SeriesResult.toDatetime(values(:, 1));
                 celled = num2cell(values);
             end
             
-            % Format the values as name/value structs
-            for i = C:-1:2
-                field = fields{i - 1};
+            % Check if the first field is the time
+            if strcmp('time', fields{1})
+                timestamps = cell2mat(celled(:, 1));
+                time = SeriesResult.toDatetime(timestamps);
+                fields = fields(2:end);
+                celled = celled(:, 2:end);
+            else
+                time = [];
+            end
+            
+            % Format the fields as structs
+            C = size(celled, 2);
+            for i = C:-1:1
+                field = fields{i};
                 column = celled(:, i);
                 if all(cellfun(@(x) isnumeric(x), column))
                     % Convert to a numeric array
@@ -147,7 +157,7 @@ classdef SeriesResult < handle
                     % Convert to a nested char cell
                     value = {column};
                 end
-                props(i - 1) = struct('field', field, 'value', value);
+                props(i) = struct('field', field, 'value', value);
             end
             
             % Create the series result

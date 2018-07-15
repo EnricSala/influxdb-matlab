@@ -43,8 +43,8 @@ classdef InfluxDB < handle
         
         % Show databases
         function databases = databases(obj)
-            response = obj.runCommand('SHOW DATABASES');
-            databases = [response.results.series.values{:}];
+            result = obj.runCommand('SHOW DATABASES');
+            databases = result.series().field('name');
         end
         
         % Change the current database
@@ -105,7 +105,7 @@ classdef InfluxDB < handle
         end
         
         % Execute other queries or commands
-        function response = runCommand(obj, command, varargin)
+        function result = runCommand(obj, command, varargin)
             idx = find(cellfun(@(x) ischar(x), varargin), 1, 'first');
             database = iif(isempty(idx), '', varargin{idx});
             idx = find(cellfun(@(x) islogical(x), varargin), 1, 'first');
@@ -124,6 +124,7 @@ classdef InfluxDB < handle
                 opts.Timeout = obj.ReadTimeout;
                 response = webread(url, params{:}, opts);
             end
+            result = QueryResult.from(response);
         end
     end
     
