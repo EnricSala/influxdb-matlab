@@ -38,7 +38,7 @@ influxdb = InfluxDB(URL, USER, PASS, DATABASE);
 % Check the status of the InfluxDB instance
 [ok, ping] = influxdb.ping()
 
-% Show the databases in the server
+% Show the databases
 dbs = influxdb.databases()
 
 % Change the current database
@@ -161,11 +161,12 @@ weather = result.series('weather')
 
 % When grouping by tags, get series with matching tags
 weather_bcn = result.series('weather', 'city', 'barcelona')
+weather_cph = result.series('weather', 'city', 'copenhagen')
 
 % Check which fields are present in a series
 field_names = weather.fields()
 
-% Extract and plot a field
+% Plot a field
 time = weather.time('Europe/Amsterdam');
 temperature = weather.field('temperature');
 plot(time, temperature);
