@@ -1,7 +1,7 @@
 classdef SeriesTest < matlab.unittest.TestCase
     
     properties(Access = private)
-        Time, Temperature, Humidity, WindDirection, RainDrops, Raining;
+        Time, Temperature, Humidity, WindDirection, RainDrops, Raining
     end
     
     methods(TestMethodSetup)
@@ -17,25 +17,52 @@ classdef SeriesTest < matlab.unittest.TestCase
     end
     
     methods(Test)
-        function fails_when_time_is_not_set(test)
+        function fails_when_empty_name(test)
+            f = @() Series('').fields('temperature', 24.3).toLine();
+            test.verifyError(f, 'toLine:emptyName');
+        end
+        
+        function fails_when_empty_time(test)
             s = Series('weather') ...
                 .fields('temperature', test.Temperature);
             test.verifyError(@() s.toLine(), 'toLine:emptyTime');
         end
         
-        function fails_when_fields_are_not_set(test)
+        function allow_empty_time_for_single_samples(test)
             s = Series('weather') ...
-                .time(test.Time);
-            test.verifyError(@() s.toLine(), 'toLine:emptyFields');
+                .fields('temperature', 24.3);
+            exp = 'weather temperature=24.3';
+            test.verifyEqual(s.toLine(), exp);
         end
         
-        function field_with_empty_value_fails(test)
-            f = @() Series('weather') ...
-                .fields('temperature', []);
-            test.verifyError(f, 'field:emptyValue');
+        function when_empty_fields_return_empty(test)
+            s = Series('weather');
+            test.verifyEqual(s.toLine(), '');
+        end
+        
+        function empty_fields_are_ignored(test)
+            p = Series('weather') ...
+                .fields('temperature', [], 'humidity', 60.7);
+            exp = 'weather humidity=60.7';
+            test.verifyEqual(p.toLine(), exp);
+        end
+        
+        function empty_char_fields_are_not_ignored(test)
+            p = Series('weather') ...
+                .fields('temperature', 24.3, 'wind_dir', '');
+            exp = 'weather temperature=24.3,wind_dir=""';
+            test.verifyEqual(p.toLine(), exp);
         end
         
         function single_field(test)
+            p = Series('weather') ...
+                .fields('temperature', 24.3) ...
+                .time(test.Time(1));
+            exp = 'weather temperature=24.3 1529933525520';
+            test.verifyEqual(p.toLine(), exp);
+        end
+        
+        function single_field_array(test)
             s = Series('weather') ...
                 .time(test.Time) ...
                 .fields('temperature', test.Temperature);
@@ -55,7 +82,15 @@ classdef SeriesTest < matlab.unittest.TestCase
             test.verifyEqual(p.toLine(), exp);
         end
         
-        function supports_fields_with_string_values(test)
+        function supports_fields_with_single_string_value(test)
+            p = Series('weather') ...
+                .fields('wind_direction', 'north-west') ...
+                .time(test.Time(1));
+            exp = 'weather wind_direction="north-west" 1529933525520';
+            test.verifyEqual(p.toLine(), exp);
+        end
+        
+        function supports_fields_with_cell_string_values(test)
             p = Series('weather') ...
                 .time(test.Time) ...
                 .fields('wind_direction', test.WindDirection);
@@ -172,6 +207,15 @@ classdef SeriesTest < matlab.unittest.TestCase
         
         function every_property_is_used(test)
             s = Series('weather') ...
+                .time(test.Time(1)) ...
+                .tags('city', 'barcelona') ...
+                .fields('temperature', 24.3);
+            exp = 'weather,city=barcelona temperature=24.3 1529933525520';
+            test.verifyEqual(s.toLine(), exp);
+        end
+        
+        function every_property_is_used_with_multiple_samples(test)
+            s = Series('weather') ...
                 .time(test.Time) ...
                 .tags('city', 'barcelona') ...
                 .fields('temperature', test.Temperature);
@@ -199,6 +243,14 @@ classdef SeriesTest < matlab.unittest.TestCase
                 .fields('humidity', [-Inf; NaN]);
             exp = 'weather temperature=24.3 1529933525520';
             test.verifyEqual(s.toLine(), exp);
+        end
+        
+        function returns_empty_when_all_values_are_nonfinite(test)
+            s = Series('weather') ...
+                .time(test.Time) ...
+                .fields('temperature', [NaN; Inf]) ...
+                .fields('humidity', [-Inf; NaN]);
+            test.verifyEqual(s.toLine(), '');
         end
         
         function time_is_added_in_millis_by_default(test)

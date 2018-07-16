@@ -25,8 +25,11 @@ classdef Series < handle
         
         % Add a field value
         function obj = field(obj, key, value)
-            if isempty(value)
-                error('field:emptyValue', 'value of field "%s" is empty', key);
+            if ischar(value)
+                field = struct('key', key, 'value', {{value}});
+                obj.Fields{end + 1} = field;
+            elseif isempty(value)
+                % ignore field with empty value
             elseif isnumeric(value) || islogical(value)
                 field = struct('key', key, 'value', value);
                 obj.Fields{end + 1} = field;
@@ -72,20 +75,30 @@ classdef Series < handle
             time_length = length(obj.Time);
             field_lengths = unique(cellfun(@(x) length(x.value), obj.Fields));
             
+            % Check if the series name is valid
+            assert(~isempty(obj.Name), ...
+                'toLine:emptyName', 'series name cannot be empty');
+            
+            % Return empty if there are no fields
+            if isempty(field_lengths)
+                lines = '';
+                return;
+            end
+            
             % Make sure the dimensions match
-            assert(~isempty(obj.Time), ...
-                'toLine:emptyTime', 'the time vector cannot be empty');
-            assert(~isempty(field_lengths), ...
-                'toLine:emptyFields', 'must define at least one field');
             assert(length(field_lengths) == 1, ...
                 'toLine:sizeMismatch', 'all fields must have the same length');
             assert(time_length == field_lengths || time_length == 0, ...
                 'toLine:sizeMismatch', 'time and fields must have the same length');
+            assert(~isempty(obj.Time) || field_lengths == 1, ...
+                'toLine:emptyTime', 'the time vector cannot be empty');
             
             % Obtain the time precision scale
-            if nargin < 2, precision = 'ms'; end
-            scale = obj.timeScale(precision);
-            timestamp = int64(scale * posixtime(obj.Time));
+            if time_length > 0
+                if nargin < 2, precision = 'ms'; end
+                scale = obj.timeScale(precision);
+                timestamp = int64(scale * posixtime(obj.Time));
+            end
             
             % Create a line for each sample
             prefix = [strjoin([{obj.Name}, obj.Tags], ','), ' '];
@@ -107,11 +120,15 @@ classdef Series < handle
                 end
                 if ~isempty(values)
                     values = values(1:end-1);
-                    time = sprintf(' %i', timestamp(i));
-                    builder = [builder, prefix, values, time, newline];
+                    if time_length > 0
+                        time = sprintf(' %i', timestamp(i));
+                        builder = [builder, prefix, values, time, newline];
+                    else
+                        builder = [builder, prefix, values, newline];
+                    end
                 end
             end
-            lines = builder(1:end-1);
+            lines = iif(isempty(builder), '', builder(1:end-1));
         end
     end
     
@@ -151,7 +168,8 @@ classdef Series < handle
                 case 'h'
                     scale = 1 / 3600;
                 otherwise
-                    error('precision:unknown', '"%s" is not a valid precision', precision);
+                    error('precision:unknown', ...
+                        '"%s" is not a valid precision', precision);
             end
         end
     end
