@@ -231,6 +231,21 @@ classdef QueryBuilderTest < matlab.unittest.TestCase
             exp = 'SELECT * FROM weather WHERE time >= 1529933525520ms';
             test.verifyEqual(q.build(), exp);
         end
+        
+        function before_and_after_are_combined_with_others(test)
+            before = datetime(1529933581618 / 1000, 'ConvertFrom', 'posixtime');
+            after = datetime(1529933525520 / 1000, 'ConvertFrom', 'posixtime');
+            where = 'temperature > 24.3';
+            q = QueryBuilder('weather') ...
+                .tags('city', 'bcn', 'station', {'a1', 'b2'}) ...
+                .before(before).after(after) ...
+                .where(where);
+            exp = ['SELECT * FROM weather WHERE' ...
+                ' "city"=''bcn'' AND ("station"=''a1'' OR "station"=''b2'')' ...
+                ' AND time < 1529933581618ms AND time > 1529933525520ms' ...
+                ' AND temperature > 24.3'];
+            test.verifyEqual(q.build(), exp);
+        end
     end
     
 end

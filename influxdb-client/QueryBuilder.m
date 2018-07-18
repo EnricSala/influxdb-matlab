@@ -245,7 +245,7 @@ classdef QueryBuilder < handle
         
         % Append where clause
         function query = appendWhereTo(obj, query)
-            clauses = [obj.Tags, {obj.Where, obj.Before, obj.After}];
+            clauses = [obj.Tags, {obj.Before, obj.After, obj.Where}];
             ispresent = cellfun(@(x) ~isempty(x), clauses);
             condition = strjoin(clauses(ispresent), ' AND ');
             if ~isempty(condition)
