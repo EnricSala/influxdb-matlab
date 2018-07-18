@@ -49,10 +49,11 @@ classdef QueryResult < handle
     
     methods(Static)
         % Convert a response to objects
-        function objs = from(response)
+        function objs = from(response, epoch)
+            if nargin < 2, epoch = []; end
             assert(~isempty(response.results), ...
                 'from:empty', 'the response contains no results');
-            objs = arrayfun(@(x) QueryResult.wrap(x), ...
+            objs = arrayfun(@(x) QueryResult.wrap(x, epoch), ...
                 response.results, 'UniformOutput', false);
             nonempty = cellfun(@(x) ~isempty(x), objs);
             objs = cellfun(@(x) x, objs(nonempty));
@@ -61,12 +62,12 @@ classdef QueryResult < handle
     
     methods(Static, Access = private)
         % Wrap series results in a query result
-        function obj = wrap(result)
+        function obj = wrap(result, epoch)
             if isfield(result, 'error')
                 error('query:error', 'query error: %s', result.error);
             end
             if isfield(result, 'series')
-                series = arrayfun(@(x) SeriesResult.from(x), result.series);
+                series = arrayfun(@(x) SeriesResult.from(x, epoch), result.series);
                 obj = QueryResult(series);
             else
                 obj = [];

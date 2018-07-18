@@ -53,12 +53,21 @@ classdef InfluxDB < handle
         end
         
         % Execute a query string
-        function result = runQuery(obj, query)
+        function result = runQuery(obj, query, database, epoch)
+            if nargin < 3 || isempty(database)
+                database = obj.Database;
+            end
+            if nargin < 4 || isempty(epoch)
+                epoch = 'ms';
+            else
+                assert(any(strcmp(epoch, {'ns', 'u', 'ms', 's', 'm', 'h'})), ...
+                    'epoch:unknown', '"%s" is not a valid epoch', epoch);
+            end
             url = [obj.Url '/query'];
             opts = weboptions('Timeout', obj.ReadTimeout, ...
                 'Username', obj.User, 'Password', obj.Password);
-            response = webread(url, 'db', obj.Database, 'epoch', 'ms', 'q', query, opts);
-            result = QueryResult.from(response);
+            response = webread(url, 'db', database, 'epoch', epoch, 'q', query, opts);
+            result = QueryResult.from(response, epoch);
         end
         
         % Obtain a query builder

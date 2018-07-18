@@ -2,6 +2,8 @@ classdef QueryBuilder < handle
     
     properties(Access = private)
         InfluxDB = []
+        Database = []
+        Epoch = []
         Series = {}
         Fields = {'*'}
         Tags = {}
@@ -27,6 +29,16 @@ classdef QueryBuilder < handle
         % Set the client instance used for execution
         function obj = influxdb(obj, influxdb)
             obj.InfluxDB = influxdb;
+        end
+        
+        % Configure the database
+        function obj = database(obj, database)
+            obj.Database = database;
+        end
+        
+        % Configure the epoch
+        function obj = epoch(obj, epoch)
+            obj.Epoch = epoch;
         end
         
         % Configure which series to query
@@ -205,7 +217,7 @@ classdef QueryBuilder < handle
             assert(~isempty(obj.InfluxDB), 'execute:clientNotSet', ...
                 'the influxdb client is not set for this builder');
             query = obj.build();
-            result = obj.InfluxDB.runQuery(query);
+            result = obj.InfluxDB.runQuery(query, obj.Database, obj.Epoch);
         end
     end
     

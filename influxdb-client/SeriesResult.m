@@ -80,7 +80,7 @@ classdef SeriesResult < handle
     
     methods(Static)
         % Convert a series result to an object
-        function obj = from(serie)
+        function obj = from(serie, epoch)
             fields = serie.columns;
             values = serie.values;
             
@@ -126,7 +126,7 @@ classdef SeriesResult < handle
             % Check if the first field is the time
             if strcmp('time', fields{1})
                 timestamps = cell2mat(celled(:, 1));
-                time = SeriesResult.toDatetime(timestamps);
+                time = SeriesResult.toDatetime(timestamps, epoch);
                 fields = fields(2:end);
                 celled = celled(:, 2:end);
             else
@@ -166,10 +166,32 @@ classdef SeriesResult < handle
     end
     
     methods(Static, Access = private)
-        % Convert a unix timestamp in millis to a datetime
-        function [time] = toDatetime(timestamp)
-            time = datetime(timestamp / 1000, ...
+        % Convert a unix timestamp to a datetime
+        function [time] = toDatetime(timestamp, epoch)
+            scale = SeriesResult.timeScale(epoch);
+            time = datetime(timestamp / scale, ...
                 'ConvertFrom', 'posixtime', 'TimeZone', 'local');
+        end
+        
+        % Obtain the scale for an epoch
+        function scale = timeScale(epoch)
+            switch epoch
+                case 'ns'
+                    scale = 1000000000;
+                case 'u'
+                    scale = 1000000;
+                case 'ms'
+                    scale = 1000;
+                case 's'
+                    scale = 1;
+                case 'm'
+                    scale = 1 / 60;
+                case 'h'
+                    scale = 1 / 3600;
+                otherwise
+                    error('epoch:unknown', ...
+                        '"%s" is not a valid epoch', epoch);
+            end
         end
     end
     
