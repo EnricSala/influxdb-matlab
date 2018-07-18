@@ -108,7 +108,7 @@ The client supports reading data from InfluxDB using query strings:
 
 ```matlab
 % Manually written query
-str = 'SELECT temperature FROM weather WHERE temperature > 20 LIMIT 100';
+str = 'SELECT temperature FROM weather WHERE humidity > 60 LIMIT 100';
 result = influxdb.runQuery(str);
 ```
 
@@ -131,6 +131,16 @@ result = influxdb.query('weather') ...
     .groupByTags('country', 'city') ...
     .groupByTime('3h', 'linear') ...
     .limit(100) ...
+    .execute();
+```
+
+The parameters of a query request can optionally be customized as follows:
+
+```matlab
+% Customize a query request
+result = influxdb.query('weather') ...
+    .database('another_database') ...
+    .epoch('m') ...
     .execute();
 ```
 
