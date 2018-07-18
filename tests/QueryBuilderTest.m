@@ -246,6 +246,34 @@ classdef QueryBuilderTest < matlab.unittest.TestCase
                 ' AND temperature > 24.3'];
             test.verifyEqual(q.build(), exp);
         end
+        
+        function before_and_equals_support_different_precisions(test)
+            time = datetime(1529933525520 / 1000, 'ConvertFrom', 'posixtime');
+            precisions = struct( ...
+                'ns', '1529933525520000000ns', ...
+                'u', '1529933525520000u', ...
+                'ms', '1529933525520ms', ...
+                's', '1529933526s', ...
+                'm', '25498892m', ...
+                'h', '424982h');
+            names = fieldnames(precisions);
+            for i = 1:length(names)
+                name = names{i};
+                value = precisions.(name);
+                % Before
+                q = QueryBuilder('weather').before(time, name);
+                test.verifyTrue(endsWith(q.build(), ['time < ' value]));
+                % BeforeEquals
+                q = QueryBuilder('weather').beforeEquals(time, name);
+                test.verifyTrue(endsWith(q.build(), ['time <= ' value]));
+                % After
+                q = QueryBuilder('weather').after(time, name);
+                test.verifyTrue(endsWith(q.build(), ['time > ' value]));
+                % AfterEquals
+                q = QueryBuilder('weather').afterEquals(time, name);
+                test.verifyTrue(endsWith(q.build(), ['time >= ' value]));
+            end
+        end
     end
     
 end

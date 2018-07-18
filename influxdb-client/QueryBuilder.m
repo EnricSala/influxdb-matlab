@@ -107,16 +107,19 @@ classdef QueryBuilder < handle
         end
         
         % Specify before time constraint
-        function obj = before(obj, before)
+        function obj = before(obj, before, precision)
+            if nargin < 3 || isempty(precision)
+                precision = 'ms';
+            end
             if isempty(before)
                 obj.Before = [];
             elseif ischar(before)
                 obj.Before = ['time < ''' before ''''];
             elseif isdatetime(before)
-                str = TimeUtils.formatDatetime(before, 'ms', true);
+                str = TimeUtils.formatDatetime(before, precision, true);
                 obj.Before = ['time < ' str];
             elseif isfloat(before)
-                str = TimeUtils.formatDatenum(before, 'ms', true);
+                str = TimeUtils.formatDatenum(before, precision, true);
                 obj.Before = ['time < ' str];
             else
                 error('unsupported before type');
@@ -124,16 +127,19 @@ classdef QueryBuilder < handle
         end
         
         % Specify before or equals time constraint
-        function obj = beforeEquals(obj, before)
+        function obj = beforeEquals(obj, before, precision)
+            if nargin < 3 || isempty(precision)
+                precision = 'ms';
+            end
             if isempty(before)
                 obj.Before = [];
             elseif ischar(before)
                 obj.Before = ['time <= ''' before ''''];
             elseif isdatetime(before)
-                str = TimeUtils.formatDatetime(before, 'ms', true);
+                str = TimeUtils.formatDatetime(before, precision, true);
                 obj.Before = ['time <= ' str];
             elseif isfloat(before)
-                str = TimeUtils.formatDatenum(before, 'ms', true);
+                str = TimeUtils.formatDatenum(before, precision, true);
                 obj.Before = ['time <= ' str];
             else
                 error('unsupported before type');
@@ -141,16 +147,19 @@ classdef QueryBuilder < handle
         end
         
         % Specify after time constraint
-        function obj = after(obj, after)
+        function obj = after(obj, after, precision)
+            if nargin < 3 || isempty(precision)
+                precision = 'ms';
+            end
             if isempty(after)
                 obj.After = [];
             elseif ischar(after)
                 obj.After = ['time > ''' after ''''];
             elseif isdatetime(after)
-                str = TimeUtils.formatDatetime(after, 'ms', true);
+                str = TimeUtils.formatDatetime(after, precision, true);
                 obj.After = ['time > ' str];
             elseif isfloat(after)
-                str = TimeUtils.formatDatenum(after, 'ms', true);
+                str = TimeUtils.formatDatenum(after, precision, true);
                 obj.After = ['time > ' str];
             else
                 error('unsupported before type');
@@ -158,16 +167,19 @@ classdef QueryBuilder < handle
         end
         
         % Specify after time constraint
-        function obj = afterEquals(obj, after)
+        function obj = afterEquals(obj, after, precision)
+            if nargin < 3 || isempty(precision)
+                precision = 'ms';
+            end
             if isempty(after)
                 obj.After = [];
             elseif ischar(after)
                 obj.After = ['time >= ''' after ''''];
             elseif isdatetime(after)
-                str = TimeUtils.formatDatetime(after, 'ms', true);
+                str = TimeUtils.formatDatetime(after, precision, true);
                 obj.After = ['time >= ' str];
             elseif isfloat(after)
-                str = TimeUtils.formatDatenum(after, 'ms', true);
+                str = TimeUtils.formatDatenum(after, precision, true);
                 obj.After = ['time >= ' str];
             else
                 error('unsupported before type');
