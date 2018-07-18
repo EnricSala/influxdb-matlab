@@ -113,9 +113,11 @@ classdef QueryBuilder < handle
             elseif ischar(before)
                 obj.Before = ['time < ''' before ''''];
             elseif isdatetime(before)
-                obj.Before = ['time < ' obj.formatDatetime(before) 'ms'];
+                str = TimeUtils.formatDatetime(before, 'ms', true);
+                obj.Before = ['time < ' str];
             elseif isfloat(before)
-                obj.Before = ['time < ' obj.formatDatenum(before) 'ms'];
+                str = TimeUtils.formatDatenum(before, 'ms', true);
+                obj.Before = ['time < ' str];
             else
                 error('unsupported before type');
             end
@@ -128,9 +130,11 @@ classdef QueryBuilder < handle
             elseif ischar(before)
                 obj.Before = ['time <= ''' before ''''];
             elseif isdatetime(before)
-                obj.Before = ['time <= ' obj.formatDatetime(before) 'ms'];
+                str = TimeUtils.formatDatetime(before, 'ms', true);
+                obj.Before = ['time <= ' str];
             elseif isfloat(before)
-                obj.Before = ['time <= ' obj.formatDatenum(before) 'ms'];
+                str = TimeUtils.formatDatenum(before, 'ms', true);
+                obj.Before = ['time <= ' str];
             else
                 error('unsupported before type');
             end
@@ -143,9 +147,11 @@ classdef QueryBuilder < handle
             elseif ischar(after)
                 obj.After = ['time > ''' after ''''];
             elseif isdatetime(after)
-                obj.After = ['time > ' obj.formatDatetime(after) 'ms'];
+                str = TimeUtils.formatDatetime(after, 'ms', true);
+                obj.After = ['time > ' str];
             elseif isfloat(after)
-                obj.After = ['time > ' obj.formatDatenum(after) 'ms'];
+                str = TimeUtils.formatDatenum(after, 'ms', true);
+                obj.After = ['time > ' str];
             else
                 error('unsupported before type');
             end
@@ -158,9 +164,11 @@ classdef QueryBuilder < handle
             elseif ischar(after)
                 obj.After = ['time >= ''' after ''''];
             elseif isdatetime(after)
-                obj.After = ['time >= ' obj.formatDatetime(after) 'ms'];
+                str = TimeUtils.formatDatetime(after, 'ms', true);
+                obj.After = ['time >= ' str];
             elseif isfloat(after)
-                obj.After = ['time >= ' obj.formatDatenum(after) 'ms'];
+                str = TimeUtils.formatDatenum(after, 'ms', true);
+                obj.After = ['time >= ' str];
             else
                 error('unsupported before type');
             end
@@ -260,20 +268,6 @@ classdef QueryBuilder < handle
                     query = [query ' GROUP BY ' groupby];
                 end
             end
-        end
-    end
-    
-    methods(Static, Access = private)
-        % Convert datetime to string
-        function str = formatDatetime(dtime)
-            str = num2str(int64(1000 * posixtime(dtime)));
-        end
-        
-        % Convert datenum to string
-        function str = formatDatenum(dnum)
-            warning('timezone not specified, assuming local');
-            dtime = datetime(dnum, 'ConvertFrom', 'datenum', 'TimeZone', 'local');
-            str = QueryBuilder.formatDatetime(dtime);
         end
     end
     

@@ -60,8 +60,7 @@ classdef InfluxDB < handle
             if nargin < 4 || isempty(epoch)
                 epoch = 'ms';
             else
-                assert(any(strcmp(epoch, {'ns', 'u', 'ms', 's', 'm', 'h'})), ...
-                    'epoch:unknown', '"%s" is not a valid epoch', epoch);
+                TimeUtils.validateEpoch(epoch);
             end
             url = [obj.Url '/query'];
             opts = weboptions('Timeout', obj.ReadTimeout, ...
@@ -90,8 +89,7 @@ classdef InfluxDB < handle
                 params{end + 1} = ['db=' urlencode(obj.Database)];
             end
             if nargin > 3 && ~isempty(precision)
-                assert(any(strcmp(precision, {'ns', 'u', 'ms', 's', 'm', 'h'})), ...
-                    'precision:unknown', '"%s" is not a valid precision', precision);
+                TimeUtils.validatePrecision(precision);
                 params{end + 1} = ['precision=' precision];
             end
             if nargin > 4  &&  ~isempty(retention)

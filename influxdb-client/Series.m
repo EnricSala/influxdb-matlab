@@ -96,7 +96,7 @@ classdef Series < handle
             % Obtain the time precision scale
             if time_length > 0
                 if nargin < 2, precision = 'ms'; end
-                scale = obj.timeScale(precision);
+                scale = TimeUtils.scaleOfPrecision(precision);
                 timestamp = int64(scale * posixtime(obj.Time));
             end
             
@@ -149,27 +149,6 @@ classdef Series < handle
                 str = [key '=' iif(value, 'true', 'false')];
             else
                 error('unsupported value type');
-            end
-        end
-        
-        % Otain the scale for a precision
-        function scale = timeScale(precision)
-            switch precision
-                case 'ns'
-                    scale = 1000000000;
-                case 'u'
-                    scale = 1000000;
-                case 'ms'
-                    scale = 1000;
-                case 's'
-                    scale = 1;
-                case 'm'
-                    scale = 1 / 60;
-                case 'h'
-                    scale = 1 / 3600;
-                otherwise
-                    error('precision:unknown', ...
-                        '"%s" is not a valid precision', precision);
             end
         end
     end
