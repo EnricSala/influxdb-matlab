@@ -202,6 +202,35 @@ classdef QueryBuilderTest < matlab.unittest.TestCase
             exp = 'SELECT * FROM weather WHERE "city"=''barcelona'' GROUP BY time(12m),"station" fill(none) LIMIT 100';
             test.verifyEqual(q.build(), exp);
         end
+        
+        %% Time before and after tests
+        function before_clause(test)
+            time = datetime(1529933525520 / 1000, 'ConvertFrom', 'posixtime');
+            q = QueryBuilder('weather').before(time);
+            exp = 'SELECT * FROM weather WHERE time < 1529933525520ms';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function before_equals_clause(test)
+            time = datetime(1529933525520 / 1000, 'ConvertFrom', 'posixtime');
+            q = QueryBuilder('weather').beforeEquals(time);
+            exp = 'SELECT * FROM weather WHERE time <= 1529933525520ms';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function after_clause(test)
+            time = datetime(1529933525520 / 1000, 'ConvertFrom', 'posixtime');
+            q = QueryBuilder('weather').after(time);
+            exp = 'SELECT * FROM weather WHERE time > 1529933525520ms';
+            test.verifyEqual(q.build(), exp);
+        end
+        
+        function after_equals_clause(test)
+            time = datetime(1529933525520 / 1000, 'ConvertFrom', 'posixtime');
+            q = QueryBuilder('weather').afterEquals(time);
+            exp = 'SELECT * FROM weather WHERE time >= 1529933525520ms';
+            test.verifyEqual(q.build(), exp);
+        end
     end
     
 end
