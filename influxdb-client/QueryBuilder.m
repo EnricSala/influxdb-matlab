@@ -10,8 +10,8 @@ classdef QueryBuilder < handle
         Before = []
         After = []
         Where = []
-        GroupByTimeInterval = {}
-        GroupByTimeFill = []
+        GroupByTimeInterval = ''
+        GroupByTimeFill = ''
         GroupByTags = {}
         Limit = []
     end
@@ -176,18 +176,16 @@ classdef QueryBuilder < handle
         
         % Configure a group by time clause
         function obj = groupByTime(obj, time, fill)
-            if ~isempty(time)
-                obj.GroupByTimeInterval = {['time(' time ')']};
-                if nargin > 2
-                    if ~isempty(fill)
-                        obj.GroupByTimeFill = ['fill(' fill ')'];
-                    else
-                        obj.GroupByTimeFill = [];
-                    end
+            if nargin > 1 && ~isempty(time)
+                obj.GroupByTimeInterval = ['time(' time ')'];
+                if nargin > 2 && ~isempty(fill)
+                    obj.GroupByTimeFill = ['fill(' fill ')'];
+                else
+                    obj.GroupByTimeFill = '';
                 end
             else
-                obj.GroupByTimeInterval = {};
-                obj.GroupByTimeInterval = [];
+                obj.GroupByTimeInterval = '';
+                obj.GroupByTimeFill = '';
             end
         end
         
