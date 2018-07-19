@@ -21,15 +21,6 @@ classdef TimeUtils
             end
         end
         
-        % Format a datenum as a string
-        function str = formatDatenum(dnum, precision, appendPrecision)
-            if nargin < 2, precision = TimeUtils.DEFAULT_PRECISION; end
-            if nargin < 3, appendPrecision = TimeUtils.DEFAULT_APPEND_PRECISION; end
-            warning('datenums do not specify a timezone, assuming local');
-            dtime = datetime(dnum, 'ConvertFrom', 'datenum', 'TimeZone', 'local');
-            str = TimeUtils.formatDatetime(dtime, precision, appendPrecision);
-        end
-        
         % Convert a timestamp to a datetime
         function dtime = toDatetime(timestamp, precision)
             scale = TimeUtils.scaleOfPrecision(precision);

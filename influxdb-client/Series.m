@@ -50,8 +50,6 @@ classdef Series < handle
         function obj = time(obj, time)
             if isdatetime(time)
                 obj.Time = time;
-            elseif isfloat(time)
-                obj.Time = datetime(time, 'ConvertFrom', 'datenum', 'TimeZone', 'local');
             else
                 error('unsupported time type');
             end

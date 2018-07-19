@@ -118,9 +118,6 @@ classdef QueryBuilder < handle
             elseif isdatetime(before)
                 str = TimeUtils.formatDatetime(before, precision, true);
                 obj.Before = ['time < ' str];
-            elseif isfloat(before)
-                str = TimeUtils.formatDatenum(before, precision, true);
-                obj.Before = ['time < ' str];
             else
                 error('unsupported before type');
             end
@@ -137,9 +134,6 @@ classdef QueryBuilder < handle
                 obj.Before = ['time <= ''' before ''''];
             elseif isdatetime(before)
                 str = TimeUtils.formatDatetime(before, precision, true);
-                obj.Before = ['time <= ' str];
-            elseif isfloat(before)
-                str = TimeUtils.formatDatenum(before, precision, true);
                 obj.Before = ['time <= ' str];
             else
                 error('unsupported before type');
@@ -158,9 +152,6 @@ classdef QueryBuilder < handle
             elseif isdatetime(after)
                 str = TimeUtils.formatDatetime(after, precision, true);
                 obj.After = ['time > ' str];
-            elseif isfloat(after)
-                str = TimeUtils.formatDatenum(after, precision, true);
-                obj.After = ['time > ' str];
             else
                 error('unsupported before type');
             end
@@ -177,9 +168,6 @@ classdef QueryBuilder < handle
                 obj.After = ['time >= ''' after ''''];
             elseif isdatetime(after)
                 str = TimeUtils.formatDatetime(after, precision, true);
-                obj.After = ['time >= ' str];
-            elseif isfloat(after)
-                str = TimeUtils.formatDatenum(after, precision, true);
                 obj.After = ['time >= ' str];
             else
                 error('unsupported before type');
