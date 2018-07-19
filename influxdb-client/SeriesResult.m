@@ -163,6 +163,11 @@ classdef SeriesResult < handle
                     end
                 else
                     % Convert to a nested char cell
+                    for j = 1:N
+                        if ~ischar(column{j})
+                            column{j} = [];
+                        end
+                    end
                     value = {column};
                 end
                 props(i) = struct('field', field, 'value', value);
