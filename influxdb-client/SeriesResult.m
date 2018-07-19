@@ -125,8 +125,16 @@ classdef SeriesResult < handle
             
             % Check if the first field is the time
             if strcmp('time', fields{1})
-                timestamps = cell2mat(celled(:, 1));
-                time = TimeUtils.toDatetime(timestamps, epoch);
+                time_column = celled(:, 1);
+                if isnumeric(time_column{1})
+                    timestamps = cell2mat(time_column);
+                    time = TimeUtils.toDatetime(timestamps, epoch);
+                elseif ischar(time_column{1})
+                    parse = @TimeUtils.parseTimestamp;
+                    time = cellfun(parse, time_column);
+                else
+                    error('unsupported time type');
+                end
                 fields = fields(2:end);
                 celled = celled(:, 2:end);
             else

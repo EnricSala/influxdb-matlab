@@ -37,6 +37,37 @@ classdef TimeUtils
                 'ConvertFrom', 'posixtime', 'TimeZone', 'local');
         end
         
+        % Convert string timestamp to a datetime
+        function dtime = parseTimestamp(timestr)
+            switch length(timestr)
+                case 20
+                    format = 'yyyy-MM-dd''T''HH:mm:ss''Z''';
+                case 22
+                    format = 'yyyy-MM-dd''T''HH:mm:ss.S''Z''';
+                case 23
+                    format = 'yyyy-MM-dd''T''HH:mm:ss.SS''Z''';
+                case 24
+                    format = 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''';
+                case 25
+                    format = 'yyyy-MM-dd''T''HH:mm:ss.SSSS''Z''';
+                case 26
+                    format = 'yyyy-MM-dd''T''HH:mm:ss.SSSSS''Z''';
+                case 27
+                    format = 'yyyy-MM-dd''T''HH:mm:ss.SSSSSS''Z''';
+                case 28
+                    format = 'yyyy-MM-dd''T''HH:mm:ss.SSSSSSS''Z''';
+                case 29
+                    format = 'yyyy-MM-dd''T''HH:mm:ss.SSSSSSSS''Z''';
+                case 30
+                    format = 'yyyy-MM-dd''T''HH:mm:ss.SSSSSSSSS''Z''';
+                otherwise
+                    error('parseTimestamp:unknownFormat', ...
+                        'unknown timestamp format: %s', timestr);
+            end
+            dtime = datetime(timestr, 'InputFormat', format, 'TimeZone', 'UTC');
+            dtime.TimeZone = 'local';
+        end
+        
         % Validate a precision
         function validatePrecision(precision)
             assert(any(strcmp(precision, TimeUtils.PRECISIONS)), ...
