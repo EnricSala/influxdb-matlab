@@ -1,14 +1,11 @@
-InfluxDB MATLAB [under development]
-===================================
+InfluxDB MATLAB
+===============
 
-#### [MATLAB][matlab] client for interacting with [InfluxDB][influxdb].
+This is a [MATLAB][matlab] client library for interacting with [InfluxDB][influxdb].
 
-This library has been developed with `InfluxDB 1.5` and `MATLAB R2018a`.
-It may work with earlier versions but they have not been tested. 
+The library has been tested with `InfluxDB 1.5` and `MATLAB R2018a`.
 
-Notice that this library is **under development**.
-The current version is usable but it is not feature-complete and may contain bugs.
-Also, beware that the library may undergo significant changes until the initial release.
+Earlier versions of InfluxDB or MATLAB may also work but have not been tested.
 
 
 Installation
