@@ -55,7 +55,7 @@ classdef QueryResult < handle
                 'from:empty', 'the response contains no results');
             objs = arrayfun(@(x) QueryResult.wrap(x, epoch), ...
                 response.results, 'UniformOutput', false);
-            nonempty = cellfun(@(x) ~isempty(x), objs);
+            nonempty = ~cellfun(@isempty, objs);
             objs = cellfun(@(x) x, objs(nonempty));
         end
     end

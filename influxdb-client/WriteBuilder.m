@@ -53,7 +53,7 @@ classdef WriteBuilder < handle
             else
                 f = @(x) x.toLine(obj.Precision);
                 items = cellfun(f, obj.Items, 'UniformOutput', false);
-                nonempty = cellfun(@(x) ~isempty(x), items);
+                nonempty = ~cellfun(@isempty, items);
                 lines = strjoin(items(nonempty), newline);
             end
         end

@@ -113,9 +113,9 @@ classdef InfluxDB < handle
         
         % Execute other queries or commands
         function result = runCommand(obj, command, varargin)
-            idx = find(cellfun(@(x) ischar(x), varargin), 1, 'first');
+            idx = find(cellfun(@ischar, varargin), 1, 'first');
             database = iif(isempty(idx), '', varargin{idx});
-            idx = find(cellfun(@(x) islogical(x), varargin), 1, 'first');
+            idx = find(cellfun(@islogical, varargin), 1, 'first');
             requiresPost = iif(isempty(idx), false, varargin{idx});
             if isempty(database)
                 params = {'q', command};

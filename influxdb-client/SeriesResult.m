@@ -146,7 +146,7 @@ classdef SeriesResult < handle
             for i = C:-1:1
                 field = fields{i};
                 column = celled(:, i);
-                if all(cellfun(@(x) isnumeric(x), column))
+                if all(cellfun(@isnumeric, column))
                     % Convert to a numeric array
                     for j = 1:N
                         if isempty(column{j})
@@ -154,7 +154,7 @@ classdef SeriesResult < handle
                         end
                     end
                     value = cell2mat(column);
-                elseif any(cellfun(@(x) islogical(x), column))
+                elseif any(cellfun(@islogical, column))
                     % Convert to a logical array
                     value = zeros(N, 1);
                     for j = 1:N
