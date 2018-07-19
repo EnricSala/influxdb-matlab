@@ -64,7 +64,7 @@ classdef Series < handle
                     obj.time(data.Properties.RowTimes);
                 end
             else
-                error('unsupported data structure');
+                error('unsupported import data type');
             end
         end
         

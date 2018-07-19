@@ -119,7 +119,7 @@ classdef QueryBuilder < handle
                 str = TimeUtils.formatDatetime(before, precision, true);
                 obj.Before = ['time < ' str];
             else
-                error('unsupported before type');
+                error('unsupported time type');
             end
         end
         
@@ -136,7 +136,7 @@ classdef QueryBuilder < handle
                 str = TimeUtils.formatDatetime(before, precision, true);
                 obj.Before = ['time <= ' str];
             else
-                error('unsupported before type');
+                error('unsupported time type');
             end
         end
         
@@ -153,7 +153,7 @@ classdef QueryBuilder < handle
                 str = TimeUtils.formatDatetime(after, precision, true);
                 obj.After = ['time > ' str];
             else
-                error('unsupported before type');
+                error('unsupported time type');
             end
         end
         
@@ -170,7 +170,7 @@ classdef QueryBuilder < handle
                 str = TimeUtils.formatDatetime(after, precision, true);
                 obj.After = ['time >= ' str];
             else
-                error('unsupported before type');
+                error('unsupported time type');
             end
         end
         
