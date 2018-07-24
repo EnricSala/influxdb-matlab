@@ -6,12 +6,12 @@ classdef SeriesResult < handle
     
     methods
         % Constructor
-        function obj = SeriesResult(name, time, tags, values)
+        function obj = SeriesResult(name, time, tags, data)
             obj.Name = name;
             obj.Time = time;
             obj.Tags = tags;
-            obj.Fields = {values.field};
-            obj.Values = values;
+            obj.Fields = {data.field};
+            obj.Values = {data.value};
         end
         
         % Get the name of the series
@@ -44,16 +44,15 @@ classdef SeriesResult < handle
         end
         
         % Get the value of a field
-        function values = field(obj, field)
+        function value = field(obj, field)
             idx = obj.indexOf(field);
             assert(~isempty(idx), ['field "' field '" is not present']);
-            values = obj.Values(idx).value;
+            value = obj.Values{idx};
         end
         
         % Convert to a table
         function result = table(obj)
-            vars = {obj.Values.value};
-            result = table(vars{:}, 'VariableNames', obj.fields());
+            result = table(obj.Values{:}, 'VariableNames', obj.Fields);
         end
         
         % Convert to a timetable, with an optional timezone
@@ -65,8 +64,7 @@ classdef SeriesResult < handle
             else
                 time = obj.time();
             end
-            vars = {obj.Values.value};
-            result = timetable(time, vars{:}, 'VariableNames', obj.fields());
+            result = timetable(time, obj.Values{:}, 'VariableNames', obj.Fields);
         end
     end
     
