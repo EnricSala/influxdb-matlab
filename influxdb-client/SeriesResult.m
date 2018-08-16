@@ -52,7 +52,8 @@ classdef SeriesResult < handle
         
         % Convert to a table
         function result = table(obj)
-            result = table(obj.Values{:}, 'VariableNames', obj.Fields);
+            names = genvarname(obj.Fields);
+            result = table(obj.Values{:}, 'VariableNames', names);
         end
         
         % Convert to a timetable, with an optional timezone
@@ -64,7 +65,8 @@ classdef SeriesResult < handle
             else
                 time = obj.time();
             end
-            result = timetable(time, obj.Values{:}, 'VariableNames', obj.Fields);
+            names = genvarname(obj.Fields);
+            result = timetable(time, obj.Values{:}, 'VariableNames', names);
         end
     end
     
