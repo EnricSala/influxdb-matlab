@@ -35,7 +35,7 @@ classdef WriteBuilder < handle
             obj.Consistency = consistency;
         end
         
-        % Append points or series
+        % Append series to the builder
         function obj = append(obj, varargin)
             for i = 1:length(varargin)
                 item = varargin{i};
