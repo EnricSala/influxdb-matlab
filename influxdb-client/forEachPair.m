@@ -1,22 +1,25 @@
 function [] = forEachPair(args, action)
-if length(args) == 1
+if isscalar(args)
     pairs = args{1};
+    assert(isstruct(pairs), ...
+        'argument must be a struct or key and value pairs');
+    keys = fieldnames(pairs);
+    for i = 1:length(keys)
+        key = keys{i};
+        value = pairs.(key);
+        action(key, value);
+    end
 else
-    aux = cellfun(@nest, args, 'UniformOutput', false);
-    pairs = struct(aux{:});
-end
-keys = fieldnames(pairs);
-for i = 1:length(keys)
-    key = keys{i};
-    value = pairs.(key);
-    action(key, value);
+    assert(iseven(length(args)), ...
+        'key and value arguments must come in pairs');
+    for i = 1:2:length(args)
+        key = args{i};
+        value = args{i + 1};
+        action(key, value);
+    end
 end
 end
 
-function y = nest(x)
-if iscell(x)
-    y = {x};
-else
-    y = x;
-end
+function even = iseven(number)
+even = ~logical(mod(number, 2));
 end

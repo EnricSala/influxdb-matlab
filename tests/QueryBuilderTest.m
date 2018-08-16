@@ -100,6 +100,12 @@ classdef QueryBuilderTest < matlab.unittest.TestCase
             test.verifyEqual(q.build(), exp);
         end
         
+        function special_chars_in_tag_values_are_allowed(test)
+            q = QueryBuilder('weather').tags('city', 'bcn*', 'station', 'a1-b2');
+            exp = 'SELECT * FROM weather WHERE "city"=''bcn*'' AND "station"=''a1-b2''';
+            test.verifyEqual(q.build(), exp);
+        end
+        
         %% Tags-like tests
         function single_tag_like(test)
             q = QueryBuilder('weather').tagsLike('city', 'barcelo');
