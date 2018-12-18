@@ -7,7 +7,7 @@ classdef QueryResult < handle
     methods
         % Constructor
         function obj = QueryResult(series)
-            obj.Names = arrayfun(@(x) x.name(), series, ...
+            obj.Names = cellfun(@(x) x.name(), series, ...
                 'UniformOutput', false)';
             obj.Series = series;
         end
@@ -56,7 +56,11 @@ classdef QueryResult < handle
             objs = arrayfun(@(x) QueryResult.wrap(x, epoch), ...
                 response.results, 'UniformOutput', false);
             nonempty = ~cellfun(@isempty, objs);
-            objs = cellfun(@(x) x, objs(nonempty));
+            if length(nonempty)>1
+                objs = cellfun(@(x) x, objs(nonempty));
+            else
+                objs = objs(nonempty);
+            end
         end
     end
     
@@ -67,7 +71,13 @@ classdef QueryResult < handle
                 error('query:error', 'query error: %s', result.error);
             end
             if isfield(result, 'series')
-                series = arrayfun(@(x) SeriesResult.from(x, epoch), result.series);
+                if length(result.series)>1  % fr touched
+                    series = arrayfun(@(x) SeriesResult.from(x, epoch), result.series, 'UniformOutput', false);
+                    %obj = cellfun(@(s) QueryResult(s), series, 'UniformOutput', false);
+                else
+                    series = {SeriesResult.from(result.series, epoch)};
+                    %obj = QueryResult(series);
+                end
                 obj = QueryResult(series);
             else
                 obj = [];
@@ -79,7 +89,7 @@ classdef QueryResult < handle
             keys = fieldnames(matchTags);
             selection = true(1, length(series));
             for i = 1:length(series)
-                itemTags = series(i).tags();
+                itemTags = series{i}.tags();
                 for j = 1:length(keys)
                     key = keys{j};
                     if ~isfield(itemTags, key) || ...
