@@ -99,7 +99,8 @@ classdef Series < handle
             end
             
             % Create a line for each sample
-            prefix = [strjoin([{obj.Name}, obj.Tags], ','), ' '];
+            prefix = strjoin([{obj.Name}, obj.Tags], ',');
+            prefix = [strrep(prefix,' ','\ ') ' '];
             builder = '';
             for i = 1:field_lengths
                 values = '';
