@@ -15,7 +15,13 @@ classdef Series < handle
         
         % Add a tag
         function obj = tag(obj, key, value)
-            obj.Tags{end + 1} = [key '=' value];
+            if isnumeric(value) || islogical(value)
+                obj.Tags{end + 1} = [Series.safeKey(key) '=' value];
+            elseif ischar(value)
+                obj.Tags{end + 1} = [Series.safeKey(key) '=' Series.safeKey(value)];
+            else
+                error('unsupported tag type');
+            end
         end
         
         % Add multiple tags at once
@@ -99,13 +105,15 @@ classdef Series < handle
             end
             
             % Create a line for each sample
-            prefix = [strjoin([{obj.Name}, obj.Tags], ','), ' '];
+            measurement = Series.safeMeasurement(obj.Name);
+            prefix = [strjoin([{measurement}, obj.Tags], ',') ' '];
+            
             builder = '';
             for i = 1:field_lengths
                 values = '';
                 for f = 1:length(obj.Fields)
                     field = obj.Fields{f};
-                    name = field.key;
+                    name = Series.safeKey(field.key);
                     value = field.value;
                     if iscell(value)
                         str = obj.fieldFmt(name, value{i});
@@ -142,12 +150,26 @@ classdef Series < handle
             elseif isinteger(value)
                 str = sprintf('%s=%ii', key, value);
             elseif ischar(value)
-                str = [key '="' value '"'];
+                str = [key '="' Series.safeValue(value) '"'];
             elseif islogical(value)
                 str = [key '=' iif(value, 'true', 'false')];
             else
                 error('unsupported value type');
             end
+        end
+        
+        % The following functions escape special characters according to:
+        % https://docs.influxdata.com/influxdb/v1.8/write_protocols/line_protocol_reference/#special-characters
+        function safe = safeValue(value)
+            safe = regexprep(value, '["\\]', '\\$0');
+        end
+        
+        function safe = safeKey(key)
+            safe = regexprep(key, '[,= ]', '\\$0');
+        end
+        
+        function safe = safeMeasurement(name)
+            safe = regexprep(name, '[, ]', '\\$0');
         end
     end
     
