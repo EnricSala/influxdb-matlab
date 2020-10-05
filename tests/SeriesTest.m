@@ -308,6 +308,31 @@ classdef SeriesTest < matlab.unittest.TestCase
                 'weather temperature=-3.5,wind_direction="west" 1529933581618'];
             test.verifyEqual(s.toLine(), exp);
         end
+        
+        function measurements_with_spaces_and_commas(test)
+            s = Series('Hello, world!') ...
+                .fields('value', 42);
+
+            expected = 'Hello\,\ world! value=42';
+            test.verifyEqual(s.toLine(), expected);
+        end
+        
+        function tags_with_commas_spaces_and_equals(test)
+            s = Series('Series_A') ...
+                .tags('Annoying, tag = annoying', 'comma="evil", am i right?') ...
+                .fields('value', 42);
+
+            expected = 'Series_A,Annoying\,\ tag\ \=\ annoying=comma\="evil"\,\ am\ i\ right? value=42';
+            test.verifyEqual(s.toLine(), expected);
+        end
+        
+        function fields_with_commas_equals_spaces_quotes_and_slashes(test)
+            s = Series('JSON') ...
+                .fields('strange, json=string', '{"w": "\/\/"}');
+
+            expected = 'JSON strange\,\ json\=string="{\"w\": \"\\/\\/\"}"';
+            test.verifyEqual(s.toLine(), expected);
+        end
     end
     
 end
