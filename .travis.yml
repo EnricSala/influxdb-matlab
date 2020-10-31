@@ -9,10 +9,10 @@ services:
 before_install:
   - >
     docker run -d
-      -p 8086:8086
-      -e INFLUXDB_ADMIN_USER=user
-      -e INFLUXDB_ADMIN_PASSWORD=password
-      influxdb:${INFLUXDB_VERSION}
+    -p 8086:8086
+    -e INFLUXDB_ADMIN_USER=user
+    -e INFLUXDB_ADMIN_PASSWORD=password
+    influxdb:${INFLUXDB_VERSION}
 
 script:
   - matlab -batch 'run_tests'
