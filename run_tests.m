@@ -7,7 +7,7 @@ import matlab.unittest.plugins.TestRunProgressPlugin;
 addpath('influxdb-client');
 
 % Check if running on a CI environment
-CI = isempty(getenv('CI'));
+CI = ~isempty(getenv('CI'));
 
 % Initialize a test runner
 runner = TestRunner.withTextOutput;
