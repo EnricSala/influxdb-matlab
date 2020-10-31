@@ -7,7 +7,7 @@ import matlab.unittest.plugins.TestRunProgressPlugin;
 addpath('influxdb-client');
 
 % Check if running on a CI environment
-CI = ~isempty(getenv('CI'));
+CI = isempty(getenv('CI'));
 
 % Initialize a test runner
 runner = TestRunner.withTextOutput;
@@ -18,10 +18,12 @@ end
 % Run all the tests
 result = runner.run(testsuite('tests'));
 
-% Display a summary
+% Fail the build if there are failures
 if CI
+    assert(all([result.Passed]), 'There are test failures!');
+    
+    % Display a test summary on success
     Name = {result.Name}';
-    Passed = [result.Passed]';
     Duration = [result.Duration]';
-    disp(table(Name, Passed, Duration));
+    disp(table(Name, Duration));
 end
