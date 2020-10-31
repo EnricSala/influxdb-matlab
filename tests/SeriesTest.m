@@ -17,13 +17,6 @@ classdef SeriesTest < matlab.unittest.TestCase
     end
     
     methods(Test)
-        function expect_failure(test)
-            s = Series('weather') ...
-                .fields('temperature', 24.3);
-            exp = 'weather temperature=42';
-            test.verifyEqual(s.toLine(), exp);
-        end
-        
         function fails_when_empty_name(test)
             f = @() Series('').fields('temperature', 24.3).toLine();
             test.verifyError(f, 'toLine:emptyName');
