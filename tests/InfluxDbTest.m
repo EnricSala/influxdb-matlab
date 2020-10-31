@@ -9,10 +9,10 @@ classdef InfluxDbTest < matlab.unittest.TestCase
             url = 'http://localhost:8086';
             user = 'user';
             password = 'password';
-            test.Database = char(randi([97 122], [1, 32]));
+            test.Database = ['test_', num2str(randi(1E15))];
             test.Client = InfluxDB(url, user, password, test.Database);
             
-            disp(['Creating test database: ', test.Database]);
+            disp(['Creating database: ', test.Database]);
             test.Client.runCommand(['CREATE DATABASE "', test.Database, '"'], true);
             
             dbs = test.Client.databases();
@@ -22,7 +22,7 @@ classdef InfluxDbTest < matlab.unittest.TestCase
     
     methods(TestMethodTeardown)
         function afterEach(test)
-            disp(['Dropping test database: ', test.Database]);
+            disp(['Dropping database: ', test.Database]);
             test.Client.runCommand(['DROP DATABASE "', test.Database, '"'], true);
         end
     end
@@ -49,9 +49,6 @@ classdef InfluxDbTest < matlab.unittest.TestCase
             test.verifyEqual(weather.fields(), {'city', 'humidity', 'temperature'});
             test.verifyEqual(weather.field('temperature'), temperature);
             test.verifyEqual(weather.field('humidity'), humidity);
-            
-            % XXX: remove this
-            test.verifyEqual(2, 3);
         end
         
         function timestamp_timezone_propagation(test)
