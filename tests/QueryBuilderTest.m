@@ -1,6 +1,6 @@
 classdef QueryBuilderTest < matlab.unittest.TestCase
     
-    methods(Test)
+    methods(Test, TestTags = {'unit'})
         %% Constructor tests
         function empty_builder_fails(test)
             f = @() QueryBuilder().build();

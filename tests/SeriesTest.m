@@ -16,7 +16,7 @@ classdef SeriesTest < matlab.unittest.TestCase
         end
     end
     
-    methods(Test)
+    methods(Test, TestTags = {'unit'})
         function fails_when_empty_name(test)
             f = @() Series('').fields('temperature', 24.3).toLine();
             test.verifyError(f, 'toLine:emptyName');
