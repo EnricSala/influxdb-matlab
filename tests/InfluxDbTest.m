@@ -51,7 +51,7 @@ classdef InfluxDbTest < matlab.unittest.TestCase
             test.verifyEqual(weather.field('humidity'), humidity);
         end
         
-        function timestamp_timezone_propagation(test)
+        function handles_timezones_correctly(test)
             time = datetime('now', 'TimeZone', 'Europe/Paris') + [0; 1] / 24;
             temperature = [22.5; 23.4];
             humidity = [60.7; 61.8];
@@ -67,7 +67,7 @@ classdef InfluxDbTest < matlab.unittest.TestCase
             result = test.Client.query('weather').execute();
             weather = result.series('weather');
             
-            test.verifyEqual(weather.time('Europe/Paris'), time);
+            test.verifyEqual(datestr(weather.time('Europe/Paris')), datestr(time));
         end
     end
     
