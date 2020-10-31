@@ -6,7 +6,7 @@ classdef InfluxDbTest < matlab.unittest.TestCase
     
     methods(TestMethodSetup)
         function beforeEach(test)
-            url = 'http://localhost:18086';
+            url = 'http://localhost:8086';
             user = 'user';
             password = 'password';
             test.Database = char(randi([97 122], [1, 32]));
