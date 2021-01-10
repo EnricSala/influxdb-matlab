@@ -69,6 +69,25 @@ classdef InfluxDbTest < matlab.unittest.TestCase
             
             test.verifyEqual(datestr(weather.time('Europe/Paris')), datestr(time));
         end
+        
+        function supports_multiple_queries_per_request(test)
+            time = datetime('now', 'TimeZone', 'local') + [0; 1] / 24;
+            series_1 = Series('a').field('value', [2, 4]).time(time);
+            series_2 = Series('b').field('value', [1, 5]).time(time);
+            
+            test.Client.writer().append([series_1, series_2]).execute();
+            
+            result = test.Client.runQuery({...
+                'select mean(value) from a', ...
+                'select sum(value) from b'});
+            
+            test.verifyEqual(length(result), 2)
+            test.verifyEqual(result(1).names(), {'a'});
+            test.verifyEqual(result(2).names(), {'b'});
+            
+            test.verifyEqual(result(1).series('a').field('mean'), 3);
+            test.verifyEqual(result(2).series('b').field('sum'), 6);
+        end
     end
     
 end
