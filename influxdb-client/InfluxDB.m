@@ -62,10 +62,14 @@ classdef InfluxDB < handle
             else
                 TimeUtils.validateEpoch(epoch);
             end
-            url = [obj.Url '/query'];
+            if iscell(query)
+                query = strjoin(query, ';');
+            end
+            params = {['db=' database], ['epoch=' epoch], ['q=' query]};
+            url = [obj.Url '/query?' strjoin(params, '&')];
             opts = weboptions('Timeout', obj.ReadTimeout, ...
                 'Username', obj.User, 'Password', obj.Password);
-            response = webread(url, 'db', database, 'epoch', epoch, 'q', query, opts);
+            response = webread(url, opts);
             result = QueryResult.from(response, epoch);
         end
         
