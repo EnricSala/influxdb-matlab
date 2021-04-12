@@ -12,7 +12,6 @@ jobs:
       before_install:
         - >
           docker run -d -p 8086:8086
-          --name influxdb
           -e INFLUXDB_ADMIN_USER=user
           -e INFLUXDB_ADMIN_PASSWORD=password
           influxdb:${INFLUXDB_VERSION}
@@ -26,13 +25,12 @@ jobs:
       before_install:
         - >
           docker run -d -p 8086:8086
-          --name influxdb
+          -e DOCKER_INFLUXDB_INIT_MODE=setup
+          -e DOCKER_INFLUXDB_INIT_USERNAME=user
+          -e DOCKER_INFLUXDB_INIT_PASSWORD=password
+          -e DOCKER_INFLUXDB_INIT_ORG=test_org
+          -e DOCKER_INFLUXDB_INIT_BUCKET=test_bucket
+          -e DOCKER_INFLUXDB_INIT_RETENTION=1w
           influxdb:${INFLUXDB_VERSION}
-          &&
-          sleep 30s
-          &&
-          docker exec influxdb influx setup
-          --username user --password password
-          --org test_org --bucket test_bucket
       script:
         - matlab -batch 'run_tests'
