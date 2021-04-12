@@ -2,6 +2,7 @@ language: matlab
 
 env:
   - INFLUXDB_VERSION="1.8"
+  - INFLUXDB_VERSION="2.0"
 
 services:
   - docker
