@@ -1,18 +1,36 @@
 language: matlab
 
-env:
-  - INFLUXDB_VERSION="1.8"
-  - INFLUXDB_VERSION="2.0"
-
 services:
   - docker
 
-before_install:
-  - >
-    docker run -d -p 8086:8086
-    -e INFLUXDB_ADMIN_USER=user
-    -e INFLUXDB_ADMIN_PASSWORD=password
-    influxdb:${INFLUXDB_VERSION}
+jobs:
+  include:
+    - name: InfluxDB v1.x
+      language: matlab
+      env:
+        - INFLUXDB_VERSION="1.8"
+      before_install:
+        - >
+          docker run -d -p 8086:8086
+          --name influxdb
+          -e INFLUXDB_ADMIN_USER=user
+          -e INFLUXDB_ADMIN_PASSWORD=password
+          influxdb:${INFLUXDB_VERSION}
+      script:
+        - matlab -batch 'run_tests'
 
-script:
-  - matlab -batch 'run_tests'
+    - name: InfluxDB v2.x
+      language: matlab
+      env:
+        - INFLUXDB_VERSION="2.0"
+      before_install:
+        - >
+          docker run -d -p 8086:8086
+          --name influxdb
+          influxdb:${INFLUXDB_VERSION}
+          &&
+          docker exec influxdb influx setup
+          --username user --password password
+          --org test_org --bucket test_bucket
+      script:
+        - matlab -batch 'run_tests'
