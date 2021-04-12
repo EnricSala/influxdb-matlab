@@ -29,6 +29,8 @@ jobs:
           --name influxdb
           influxdb:${INFLUXDB_VERSION}
           &&
+          sleep 30s
+          &&
           docker exec influxdb influx setup
           --username user --password password
           --org test_org --bucket test_bucket
