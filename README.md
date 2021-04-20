@@ -50,6 +50,21 @@ influxdb.setReadTimeout(10);
 influxdb.setWriteTimeout(10);
 ```
 
+Usage with InfluxDB v2.0 is similar, but the instantiation is a bit different.
+
+```matlab
+% Build an InfluxDB client
+URL = 'http://localhost:8086';
+TOKEN = 'token'
+ORG = 'organization'
+DATABASE = 'server_stats';
+influxdb = InfluxDB(URL, TOKEN, ORG, DATABASE);
+```
+
+The v2.0 client uses the v1.x compatible API. The [compatibility API](https://docs.influxdata.com/influxdb/v2.0/reference/api/influxdb-1x/) supports InfluxQL, with the following caveats:
+
+- The `INTO` clause (e.g. `SELECT ... INTO ...`) is not supported.
+- With the exception of `DELETE` and `DROP MEASUREMENT` queries, which are still allowed, InfluxQL database management commands are not supported.
 
 Writing data
 ------------
@@ -206,19 +221,19 @@ License
 -------
 
     MIT License
-
+    
     Copyright (c) 2018 Enric Sala
-
+    
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
     in the Software without restriction, including without limitation the rights
     to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
     copies of the Software, and to permit persons to whom the Software is
     furnished to do so, subject to the following conditions:
-
+    
     The above copyright notice and this permission notice shall be included in all
     copies or substantial portions of the Software.
-
+    
     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
     IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
     FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -228,6 +243,6 @@ License
     SOFTWARE.
 
 
- [matlab]: https://en.wikipedia.org/wiki/MATLAB
- [influxdb]: https://en.wikipedia.org/wiki/InfluxDB
- [influxdb-docs]: https://docs.influxdata.com/influxdb
+[matlab]: https://en.wikipedia.org/wiki/MATLAB
+[influxdb]: https://en.wikipedia.org/wiki/InfluxDB
+[influxdb-docs]: https://docs.influxdata.com/influxdb
