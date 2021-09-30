@@ -15,13 +15,7 @@ classdef Series < handle
         
         % Add a tag
         function obj = tag(obj, key, value)
-            if isnumeric(value) || islogical(value)
-                obj.Tags{end + 1} = [Series.safeKey(key) '=' value];
-            elseif ischar(value)
-                obj.Tags{end + 1} = [Series.safeKey(key) '=' Series.safeKey(value)];
-            else
-                error('unsupported tag type');
-            end
+            obj.Tags{end + 1} = Series.tagFmt(key, value);
         end
         
         % Add multiple tags at once
@@ -108,17 +102,17 @@ classdef Series < handle
             measurement = Series.safeMeasurement(obj.Name);
             prefix = [strjoin([{measurement}, obj.Tags], ',') ' '];
             
-            builder = '';
+            lines = cell(100);
+            n = 1;
             for i = 1:field_lengths
                 values = '';
                 for f = 1:length(obj.Fields)
                     field = obj.Fields{f};
-                    name = Series.safeKey(field.key);
                     value = field.value;
                     if iscell(value)
-                        str = obj.fieldFmt(name, value{i});
+                        str = Series.fieldFmt(field.key, value{i});
                     else
-                        str = obj.fieldFmt(name, value(i));
+                        str = Series.fieldFmt(field.key, value(i));
                     end
                     if ~isempty(str)
                         values = [values, str, ','];
@@ -128,31 +122,52 @@ classdef Series < handle
                     values = values(1:end-1);
                     if time_length > 0
                         time = sprintf(' %i', timestamp(i));
-                        builder = [builder, prefix, values, time, newline];
+                        lines{n} = [prefix, values, time];
                     else
-                        builder = [builder, prefix, values, newline];
+                        lines{n} = [prefix, values];
+                    end
+                    n = n + 1;
+                    if (n > numel(lines))
+                        lines = [lines cell(100)];
                     end
                 end
             end
-            lines = iif(isempty(builder), '', builder(1:end-1));
+            lines = lines(1:(n-1));
         end
     end
     
     methods(Static, Access = private)
         % Format a field
         function str = fieldFmt(key, value)
+            if ischar(value)
+                str = [Series.safeKey(key) '="' Series.safeValue(value) '"'];
+            else
+                str = Series.genericFmt(key, value);
+            end
+        end
+        
+        % Format a tag
+        function str = tagFmt(key, value)
+            if ischar(value)
+                str = [Series.safeKey(key) '=' Series.safeKey(value)];
+            else
+                str = Series.genericFmt(key, value);
+            end
+        end
+        
+        % Generic formatting (field or tag)
+        function str = genericFmt(key, value)
+            safeKey = Series.safeKey(key);
             if isfloat(value)
                 if ~isempty(value) && isfinite(value)
-                    str = sprintf('%s=%.8g', key, value);
+                    str = sprintf('%s=%.8g', safeKey, value);
                 else
                     str = '';
                 end
             elseif isinteger(value)
-                str = sprintf('%s=%ii', key, value);
-            elseif ischar(value)
-                str = [key '="' Series.safeValue(value) '"'];
+                str = sprintf('%s=%ii', safeKey, value);
             elseif islogical(value)
-                str = [key '=' iif(value, 'true', 'false')];
+                str = [safeKey '=' iif(value, 'true', 'false')];
             else
                 error('unsupported value type');
             end
