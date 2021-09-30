@@ -1,0 +1,17 @@
+language: matlab
+
+env:
+  - INFLUXDB_VERSION="1.8"
+
+services:
+  - docker
+
+before_install:
+  - >
+    docker run -d -p 8086:8086
+    -e INFLUXDB_ADMIN_USER=user
+    -e INFLUXDB_ADMIN_PASSWORD=password
+    influxdb:${INFLUXDB_VERSION}
+
+script:
+  - matlab -batch 'run_tests'
