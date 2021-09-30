@@ -107,7 +107,16 @@ classdef InfluxDB < handle
             url = [obj.Url '/write?' strjoin(params, '&')];
             opts = weboptions('Timeout', obj.WriteTimeout, ...
                 'Username', obj.User, 'Password', obj.Password);
-            webwrite(url, lines, opts);
+            
+            if iscell(lines)
+                for from = 1:5000:numel(lines)
+                    to = min(from+4999, numel(lines));
+                    part = strjoin(lines(from:to), '\n');
+                    webwrite(url, part, opts);
+                end
+            else
+                webwrite(url, lines, opts);
+            end
         end
         
         % Obtain a write builder
